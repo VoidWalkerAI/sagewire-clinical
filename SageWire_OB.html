@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SageWire OB</title>
+    <style>
+        body { background: #f3e5f5; font-family: sans-serif; padding: 20px; text-align: center; }
+        .header { background: #8e24aa; color: white; padding: 15px; border-radius: 8px; font-weight: bold; margin-bottom: 20px; }
+        input { width: 100%; padding: 15px; font-size: 1.1rem; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 20px; }
+        .result-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: none; }
+        .date-big { font-size: 2rem; font-weight: 900; color: #8e24aa; margin: 10px 0; }
+        button { background: #8e24aa; color: white; border: none; padding: 15px 30px; font-size: 1rem; border-radius: 25px; cursor: pointer; width: 100%; }
+    </style>
+</head>
+<body>
+    <div class="header">DUE DATE CALCULATOR</div>
+    
+    <label style="display:block; text-align:left; margin-bottom:8px; font-weight:bold; color:#6a1b9a;">First Day of Last Period:</label>
+    <input type="date" id="lmp">
+    
+    <button onclick="calculateEDD()">CALCULATE</button>
+
+    <div class="result-card" id="result">
+        <div>Estimated Due Date:</div>
+        <div class="date-big" id="eddDisplay"></div>
+        <div style="font-size:0.8rem; color:#666;">Based on Naegele's Rule (280 Days)</div>
+    </div>
+
+<script>
+    function calculateEDD() {
+        const lmpInput = document.getElementById('lmp').value;
+        if (!lmpInput) return;
+        
+        const lmp = new Date(lmpInput);
+        // Add 280 days (40 weeks)
+        const edd = new Date(lmp.getTime() + (280 * 24 * 60 * 60 * 1000));
+        
+        // Format nicely
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('eddDisplay').innerText = edd.toLocaleDateString('en-US', options);
+        document.getElementById('result').style.display = 'block';
+    }
+</script>
+</body>
+</html>
