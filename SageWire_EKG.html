@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SageWire EKG</title>
+    <style>
+        body { background: #ffebee; font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+        .header { background: #d32f2f; color: white; padding: 15px; font-weight: bold; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+        
+        .card { background: white; border-radius: 10px; overflow: hidden; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .ekg-strip { background: #111; height: 80px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        
+        /* Grid lines for realism */
+        .ekg-strip::before { content: ''; position: absolute; width: 100%; height: 100%; background-image: linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px); background-size: 20px 20px; opacity: 0.3; }
+        
+        svg { width: 100%; height: 100%; stroke: #00e676; stroke-width: 2; fill: none; z-index: 2; }
+        
+        .info { padding: 15px; }
+        .rhythm-name { font-weight: 900; color: #b71c1c; font-size: 1.1rem; text-transform: uppercase; }
+        .action { font-size: 0.9rem; margin-top: 5px; color: #555; }
+        .badge { background: #ffcdd2; color: #b71c1c; font-weight: bold; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; vertical-align: middle; }
+    </style>
+</head>
+<body>
+
+    <div class="header">KILLER RHYTHMS</div>
+
+    <div class="card">
+        <div class="ekg-strip">
+            <svg viewBox="0 0 200 60">
+                <path d="M0,30 Q10,10 20,40 T40,20 T60,50 T80,10 T100,45 T120,25 T140,55 T160,15 T180,30 L200,30" />
+            </svg>
+        </div>
+        <div class="info">
+            <div class="rhythm-name">V-Fib <span class="badge">DEADLY</span></div>
+            <div class="action"><strong>Looks like:</strong> Chaotic squiggles. No pulse.<br><strong>Action:</strong> DEFIBRILLATE (Shock) immediately + CPR.</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="ekg-strip">
+            <svg viewBox="0 0 200 60">
+                <path d="M0,30 L10,30 L15,5 L20,55 L25,30 L35,30 L40,5 L45,55 L50,30 L60,30 L65,5 L70,55 L75,30 L85,30 L90,5 L95,55 L100,30 L110,30 L115,5 L120,55 L125,30" />
+            </svg>
+        </div>
+        <div class="info">
+            <div class="rhythm-name">V-Tach <span class="badge">URGENT</span></div>
+            <div class="action"><strong>Looks like:</strong> Sawtooth / Tombstones.<br><strong>Action:</strong> Check Pulse. If NO pulse -> Shock. If pulse -> Meds (Amiodarone).</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="ekg-strip">
+            <svg viewBox="0 0 200 60">
+                <line x1="0" y1="30" x2="200" y2="30" />
+            </svg>
+        </div>
+        <div class="info">
+            <div class="rhythm-name">Asystole <span class="badge">DEADLY</span></div>
+            <div class="action"><strong>Looks like:</strong> Flat line.<br><strong>Action:</strong> CPR + Epinephrine. DO NOT SHOCK (No electricity to reorganize).</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="ekg-strip">
+            <svg viewBox="0 0 200 60">
+                <path d="M0,30 Q5,28 10,32 T20,28 T30,32 L35,5 L40,55 L45,30 Q55,28 65,32 T75,28 T85,32 L90,5 L95,55 L100,30" />
+            </svg>
+        </div>
+        <div class="info">
+            <div class="rhythm-name">A-Fib <span class="badge">COMMON</span></div>
+            <div class="action"><strong>Looks like:</strong> Irregularly irregular. Quivering between beats.<br><strong>Action:</strong> Control rate (Diltiazem/Digoxin). Watch for clots.</div>
+        </div>
+    </div>
+
+</body>
+</html>
