@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SageWire Clinical | GI</title>
+    <title>SageWire Clinical | Ortho</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            /* SAGE GREEN PALETTE */
-            --col-scrub: #2e7d32; /* Forest/Sage Green */
-            --col-scrub-dark: #1b5e20;
+            /* SLATE GREY PALETTE (X-RAY) */
+            --col-scrub: #455a64; /* Blue Grey */
+            --col-scrub-dark: #263238;
             --col-white: #ffffff;
-            --col-bg: #e8f5e9; /* Very Light Green BG */
-            --col-text: #263238;
+            --col-bg: #eceff1; /* Very Light Grey */
+            --col-text: #212121;
             --col-sub: #546e7a;
-            --col-accent: #ff6f00; /* Amber/Brown for scripts */
-            --col-active: #c8e6c9; /* Active Playing Color */
+            --col-accent: #d84315; /* Burnt Orange (Construction feel) */
+            --col-active: #cfd8dc; /* Active Playing Color */
             
             --shadow-card: 0 2px 8px rgba(0,0,0,0.08);
             --font-main: 'Inter', sans-serif;
@@ -68,7 +68,7 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             outline: none;
         }
-        .search-input::placeholder { color: #a5d6a7; } /* Lighter green placeholder */
+        .search-input::placeholder { color: #b0bec5; }
 
         /* --- LIST --- */
         .card-list {
@@ -94,7 +94,7 @@
         }
         .med-card.playing {
             border-left-color: var(--col-scrub);
-            background: #e8f5e9;
+            background: #cfd8dc;
         }
 
         /* CARD HEADER */
@@ -121,7 +121,7 @@
         .med-card.expanded .card-body { display: block; }
 
         .script-box {
-            background: #fff3e0; /* Pale Orange/Cream */
+            background: #fbe9e7; /* Pale Burnt Orange */
             border-left: 4px solid var(--col-accent);
             padding: 12px;
             margin-top: 10px;
@@ -130,7 +130,7 @@
             color: #3e2723;
         }
         .script-label {
-            font-size: 0.7rem; font-weight: 800; color: #ef6c00;
+            font-size: 0.7rem; font-weight: 800; color: #d84315;
             text-transform: uppercase; margin-bottom: 4px; display: block;
         }
 
@@ -166,9 +166,9 @@
             to { opacity: 1; transform: translateY(0); }
         }
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(46, 125, 50, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(69, 90, 100, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(69, 90, 100, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(69, 90, 100, 0); }
         }
 
     </style>
@@ -177,14 +177,14 @@
 
     <div class="header">
         <div class="brand">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20h2a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.5a2.5 2.5 0 0 1-2.5-2.5v0a2.5 2.5 0 0 0-2.5-2.5h-5A2.5 2.5 0 0 0 4 1.5v0A2.5 2.5 0 0 1 1.5 4H1a1 1 0 0 0-1 1v13a2 2 0 0 0 2 2h2"/><path d="M5 16h6"/><path d="M5 12h6"/><path d="M5 8h6"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 10c.7-.7 1.69 0 2.5 0a2.5 2.5 0 1 0 0-5 .5.5 0 0 1-.5-.5 2.5 2.5 0 1 0-5 0c0 .81.7 1.8 0 2.5l-7 7c-.7.7-1.69 0-2.5 0a2.5 2.5 0 0 0 0 5c.28 0 .5.22.5.5a2.5 2.5 0 1 0 5 0c0-.81-.7-1.8 0-2.5Z"/></svg>
             SAGEWIRE CLINICAL
         </div>
-        <span class="dept-badge">G.I.</span>
+        <span class="dept-badge">ORTHO</span>
     </div>
 
     <div class="search-container">
-        <input type="text" class="search-input" id="searchBar" placeholder="Search gut..." onkeyup="filterList()">
+        <input type="text" class="search-input" id="searchBar" placeholder="Search bones..." onkeyup="filterList()">
     </div>
 
     <div class="card-list" id="cardContainer"></div>
@@ -197,67 +197,67 @@
     </div>
 
 <script>
-    /* --- THE DATABASE (GI) --- */
+    /* --- THE DATABASE (ORTHO) --- */
     const dictionary = [
         {
-            term: "GERD (Reflux)",
-            trans: "Leaky Valve",
-            script: "There is a valve at the top of your stomach that acts like a lid. Right now, that lid isn't closing tight enough, so stomach acid is splashing back up into your throat like a drink spilling without a cap."
+            term: "Osteoporosis",
+            trans: "Brittle Beams",
+            script: "Think of healthy bone like strong oak wood. Osteoporosis is like termites getting into that wood; it makes the inside look like swiss cheese, so the beam is weak and can break easily."
         },
         {
-            term: "Bowel Obstruction",
-            trans: "Kinked Hose",
-            script: "Think of a kink in a garden hose. Nothing can pass through that spot, and everything is backing up behind it. We need to unkink it so things can flow again."
+            term: "Osteoarthritis",
+            trans: "Rusty Hinge",
+            script: "Your joints normally have a smooth cushion so they glide. That cushion has worn away, so now it is like a rusty door hinge grinding bone-on-bone, which is why it hurts to move."
         },
         {
-            term: "Cirrhosis",
-            trans: "Scarred Filter",
-            script: "Your liver acts like a filter for your blood. Imagine a soft sponge turning into a hard rock. Because of the scarring, it can't soak up toxins or let blood flow through it easily anymore."
+            term: "Herniated Disc",
+            trans: "Jelly Donut",
+            script: "The discs in your spine are like shock absorbers, imagine a jelly donut. You squished the donut too hard, and the jelly inside leaked out and is pinching a nerve nearby."
         },
         {
-            term: "Pancreatitis",
-            trans: "Angry Factory",
-            script: "Your pancreas makes juices to digest food. Right now, those strong juices are getting stuck inside the pancreas and irritating it, basically starting to digest the organ itself instead of the food."
+            term: "Fracture",
+            trans: "Cracked Beam",
+            script: "The structural beam of your leg has a crack in it. We need to cast it, which is basically pouring cement around it, to hold it perfectly still so the body can weld that crack back together."
         },
         {
-            term: "Diverticulitis",
-            trans: "Infected Pockets",
-            script: "Imagine the inner wall of your colon has developed tiny little pouches, like bubbles on a tire. One of those pouches has trapped some bacteria and gotten infected."
+            term: "Ligament Tear (ACL)",
+            trans: "Snapped Rubber Band",
+            script: "Your ligaments are strong rubber bands that hold your knee steady. You stretched one too far and it snapped. The knee is wobbly now because that stabilizing band is broken."
         },
         {
-            term: "Hernia",
-            trans: "Muscle Tear",
-            script: "Your muscle wall holds your organs in place like a corset. There is a weak spot or a small hole in that corset, and a piece of your intestine is poking through it."
+            term: "Compartment Syndrome",
+            trans: "Tight Suitcase",
+            script: "Your muscles are packed inside a tight wrapper. Due to swelling, it is like trying to zip shut an overpacked suitcase. The pressure inside is so high it is crushing the nerves and blood vessels."
         },
         {
-            term: "Gastroenteritis",
-            trans: "System Flush",
-            script: "Your stomach and intestines are irritated by a virus. The body is hitting the Eject button on everything inside to try and flush out the bug as fast as possible."
+            term: "Gout",
+            trans: "The Angry Toe",
+            script: "It feels like you stubbed your toe, but the coffee table was made of lava. Crystals have formed in the joint, acting like tiny shards of broken glass. We need to wash those crystals out."
         },
         {
-            term: "C. Diff",
-            trans: "Hostile Takeover",
-            script: "Good bacteria usually guard your gut. Right now, a bully bacteria has taken over and killed off the good guys, causing inflammation and those frequent bathroom trips."
+            term: "Sciatica",
+            trans: "The Zapping Wire",
+            script: "There is a massive nerve running down your leg that is currently being pinched at the source. It is like stepping on a live wire; the problem is in your back, but your leg is taking the punishment."
         },
         {
-            term: "Crohn's Disease",
-            trans: "Raw Lining",
-            script: "Imagine getting a carpet burn on your skin, but on the inside of your intestines. Your immune system is attacking the lining, leaving it raw and swollen."
+            term: "Rheumatoid Arthritis",
+            trans: "Friendly Fire",
+            script: "Your immune system is usually your bodyguard, but right now it is confused. It is attacking your own joints by mistake, causing them to get hot, swollen, and stiff."
         },
         {
-            term: "Appendicitis",
-            trans: "Bursting Balloon",
-            script: "The appendix is a small pouch attached to your gut. It has become blocked and swollen like a balloon filling with water. We need to remove it before it pops."
+            term: "Scoliosis",
+            trans: "Curved Pillar",
+            script: "Your spine should be a straight pillar. Right now, it is curving to the side like the letter S. This throws off your foundation and can make your shoulders or hips look uneven."
         },
         {
-            term: "Melena",
-            trans: "Old Blood",
-            script: "This indicates bleeding higher up in your digestion system. By the time the blood travels all the way through, it turns dark and tar-like."
+            term: "Carpal Tunnel",
+            trans: "Pinched Cable",
+            script: "The tunnel in your wrist is too crowded. The nerve is getting squeezed like a cable caught in a door jamb. We need to open the door to let it breathe."
         },
         {
-            term: "Dysphagia",
-            trans: "Traffic Control Error",
-            script: "The coordination between your mouth and throat is off. It is like a traffic light malfunction; the muscles aren't opening and closing in the right order to let food down safely."
+            term: "Plantar Fasciitis",
+            trans: "Tight Bowstring",
+            script: "There is a thick band on the bottom of your foot that acts like a bowstring. It is pulled way too tight, so every time you take a step, it pulls on your heel bone and causes that sharp pain."
         }
     ];
 
