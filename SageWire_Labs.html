@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SageWire Labs</title>
+    <style>
+        body { background: #f0f4c3; font-family: sans-serif; padding: 20px; text-align: center; }
+        .header { background: #827717; color: white; padding: 15px; font-weight: bold; border-radius: 8px; margin-bottom: 30px; }
+        
+        .fishbone-container { display: flex; justify-content: center; margin-bottom: 40px; }
+        .label { font-weight: bold; color: #827717; margin-bottom: 10px; text-transform: uppercase; font-size: 0.9rem; }
+
+        /* BMP SKELETON CSS */
+        .bmp-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; width: 200px; text-align: center; font-weight: bold; color: #333; }
+        .b-val { padding: 10px 5px; font-size: 1.1rem; }
+        
+        /* The Lines */
+        .border-r { border-right: 3px solid #333; }
+        .border-b { border-bottom: 3px solid #333; }
+        .tail { position: relative; }
+        .tail::after { content: ''; position: absolute; right: -20px; top: 50%; width: 20px; height: 3px; background: #333; }
+
+        /* CBC SKELETON CSS */
+        .cbc-grid { display: grid; grid-template-columns: 1fr 1fr; width: 140px; text-align: center; font-weight: bold; color: #333; }
+        .c-left { border-right: 3px solid #333; border-bottom: 3px solid #333; padding: 10px; }
+        .c-right { border-bottom: 3px solid #333; padding: 10px; }
+        .c-left-b { border-right: 3px solid #333; padding: 10px; }
+        .c-right-b { padding: 10px; }
+        
+        .legend { background: white; padding: 15px; border-radius: 8px; text-align: left; font-size: 0.9rem; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .leg-row { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 5px 0; }
+        .leg-row:last-child { border: none; }
+        .range { color: #555; font-family: monospace; }
+    </style>
+</head>
+<body>
+
+    <div class="header">LAB SKELETONS</div>
+
+    <div class="label">Basic Metabolic Panel (BMP)</div>
+    <div class="fishbone-container">
+        <div class="bmp-grid">
+            <div class="b-val border-r border-b">Na</div>
+            <div class="b-val border-r border-b">Cl</div>
+            <div class="b-val border-b">BUN</div>
+            
+            <div class="b-val border-r">K</div>
+            <div class="b-val border-r">CO2</div>
+            <div class="b-val tail">Cr</div>
+            
+            <div class="b-val" style="grid-column: span 3; margin-top:5px; font-size:0.9rem;">
+                &lt; <span style="border-bottom:3px solid #333; padding:0 5px;">Gluc</span> &gt;
+            </div>
+        </div>
+    </div>
+
+    <div class="legend">
+        <div class="leg-row"><span>Na (Sodium)</span> <span class="range">135-145</span></div>
+        <div class="leg-row"><span>K (Potassium)</span> <span class="range">3.5-5.0</span></div>
+        <div class="leg-row"><span>Cl (Chloride)</span> <span class="range">95-105</span></div>
+        <div class="leg-row"><span>CO2 (Bicarb)</span> <span class="range">23-29</span></div>
+        <div class="leg-row"><span>BUN</span> <span class="range">7-20</span></div>
+        <div class="leg-row"><span>Cr (Creat)</span> <span class="range">0.6-1.2</span></div>
+        <div class="leg-row"><span>Gluc (Glucose)</span> <span class="range">70-100</span></div>
+    </div>
+
+    <div class="label" style="margin-top:30px;">Complete Blood Count (CBC)</div>
+    <div class="fishbone-container">
+        <div class="cbc-grid">
+            <div class="c-left">WBC</div>
+            <div class="c-right">Hgb</div>
+            <div class="c-left-b">Plt</div>
+            <div class="c-right-b">Hct</div>
+        </div>
+    </div>
+
+    <div class="legend">
+        <div class="leg-row"><span>WBC (White Cell)</span> <span class="range">5-10k</span></div>
+        <div class="leg-row"><span>Hgb (Hemoglobin)</span> <span class="range">12-16</span></div>
+        <div class="leg-row"><span>Hct (Hematocrit)</span> <span class="range">37-47%</span></div>
+        <div class="leg-row"><span>Plt (Platelets)</span> <span class="range">150-400k</span></div>
+    </div>
+
+</body>
+</html>
