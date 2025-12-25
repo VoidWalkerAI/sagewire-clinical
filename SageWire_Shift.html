@@ -2,163 +2,182 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SageWire Shift Brain</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SageWire CPR v2.1</title>
     <style>
-        body { background: #eceff1; font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; height: 95vh; }
+        /* Use 100dvh to account for mobile browser bars */
+        body { 
+            background: #ffebee; 
+            font-family: sans-serif; 
+            text-align: center; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100dvh; 
+            margin: 0; 
+            overflow: hidden; 
+        }
         
-        .header { background: #37474f; color: white; padding: 15px; font-weight: bold; border-radius: 8px; text-align: center; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .export-btn { background: #00897b; border: none; color: white; padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
+        .header { 
+            background: #d32f2f; 
+            color: white; 
+            padding: 15px; 
+            font-weight: 900; 
+            font-size: 1.2rem; 
+            letter-spacing: 1px; 
+            flex: 0 0 auto; /* Don't shrink */
+        }
+        
+        /* Main content area expands to fill space */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
 
-        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        input { padding: 15px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
-        #roomInput { width: 80px; text-align: center; }
-        #taskInput { flex: 1; }
-        button#addBtn { background: #37474f; color: white; border: none; padding: 0 20px; border-radius: 6px; font-weight: bold; font-size: 1.5rem; cursor: pointer; }
+        /* Responsive Text: Shrinks on small phones, grows on big ones */
+        .timer-display { 
+            font-size: clamp(5rem, 25vw, 9rem); 
+            font-weight: 900; 
+            color: #b71c1c; 
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+        }
+        
+        .cycle-count { 
+            font-size: clamp(1.2rem, 5vw, 2rem); 
+            color: #555; 
+            margin-top: 10px; 
+            font-weight: bold; 
+        }
+        
+        /* Buttons stick to bottom but respect padding */
+        .btn-container { 
+            padding: 15px; 
+            display: flex; 
+            gap: 10px; 
+            height: auto;
+            flex: 0 0 auto; 
+            margin-bottom: safe-area-inset-bottom; /* For iPhone X+ */
+        }
+        
+        button { 
+            flex: 1; 
+            border: none; 
+            border-radius: 12px; 
+            font-size: 1.3rem; 
+            font-weight: 900; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            padding: 20px 0;
+        }
+        
+        .btn-start { background: #d32f2f; color: white; box-shadow: 0 4px 0 #b71c1c; }
+        .btn-start:active { transform: translateY(4px); box-shadow: none; }
+        
+        .btn-stop { background: #455a64; color: white; max-width: 30%; box-shadow: 0 4px 0 #263238; }
+        .btn-stop:active { transform: translateY(4px); box-shadow: none; }
 
-        /* The List */
-        ul { list-style: none; padding: 0; flex: 1; overflow-y: auto; margin: 0; }
-        li { background: white; border-bottom: 1px solid #eee; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #cfd8dc; margin-bottom: 5px; border-radius: 4px; transition: 0.2s; }
+        /* Overlay */
+        .pulse-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #ffeb3b; color: black; 
+            display: none; flex-direction: column; justify-content: center; align-items: center; 
+            z-index: 999; cursor: pointer;
+        }
+        .pulse-title { font-size: clamp(3rem, 15vw, 6rem); font-weight: 900; text-transform: uppercase; margin-bottom: 20px; }
+        .pulse-sub { font-size: 1.2rem; font-weight: bold; animation: blink 1s infinite; background: black; color: #ffeb3b; padding: 10px 20px; border-radius: 50px; }
         
-        /* Done State */
-        li.done { opacity: 0.6; background: #f5f5f5; border-left-color: #4caf50; }
-        li.done .task-text { text-decoration: line-through; color: #777; }
-        
-        .task-content { display: flex; flex-direction: column; width: 100%; cursor: pointer; }
-        .room-badge { font-weight: 900; color: #37474f; font-size: 0.9rem; margin-bottom: 4px; }
-        .time-stamp { font-size: 0.7rem; color: #90a4ae; margin-top: 4px; }
-        
-        .delete-btn { color: #e53935; font-weight: bold; padding: 10px; cursor: pointer; font-size: 1.2rem; margin-left: 10px; }
-
-        .footer-controls { margin-top: 20px; text-align: center; }
-        .clear-btn { background: transparent; color: #e53935; border: 1px solid #e53935; padding: 10px 30px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; }
+        @keyframes blink { 0% {opacity:1;} 50% {opacity:0.3;} 100% {opacity:1;} }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <span>SHIFT BRAIN</span>
-        <button class="export-btn" onclick="exportCSV()">💾 SAVE CSV</button>
-    </div>
-
-    <div class="input-group">
-        <input type="text" id="roomInput" placeholder="Rm #">
-        <input type="text" id="taskInput" placeholder="Task (e.g. Meds)">
-        <button id="addBtn" onclick="addTask()">+</button>
-    </div>
-
-    <ul id="taskList"></ul>
+    <div class="header">CODE BLUE ASSIST</div>
     
-    <div class="footer-controls">
-        <button class="clear-btn" onclick="clearAll()">Start New Shift (Clear)</button>
+    <div class="main-content">
+        <div class="timer-display" id="time">02:00</div>
+        <div class="cycle-count">CYCLE: <span id="cycle">1</span></div>
+    </div>
+    
+    <div class="pulse-overlay" id="alertScreen" onclick="resetCycle()">
+        <div class="pulse-title">SWITCH!</div>
+        <div class="pulse-sub">TAP SCREEN TO RESUME</div>
+    </div>
+
+    <div class="btn-container">
+        <button class="btn-stop" onclick="stopTimer()">Stop</button>
+        <button class="btn-start" onclick="startTimer()">START</button>
     </div>
 
 <script>
-    // 1. Load Data on Startup
-    let tasks = JSON.parse(localStorage.getItem('sage_tasks')) || [];
-    renderTasks();
+    let time = 120; // 2 minutes
+    let running = false;
+    let cycle = 1;
+    let interval;
+    let audioCtx; 
 
-    function addTask() {
-        const room = document.getElementById('roomInput').value.trim();
-        const taskText = document.getElementById('taskInput').value.trim();
-        if(!taskText) return;
-
-        const newTask = {
-            id: Date.now(),
-            room: room || 'Gen',
-            text: taskText,
-            created: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-            done: false,
-            completedAt: ''
-        };
-
-        tasks.push(newTask);
-        saveAndRender();
+    function startTimer() {
+        if(running) return;
         
-        document.getElementById('roomInput').value = '';
-        document.getElementById('taskInput').value = '';
-        document.getElementById('roomInput').focus();
-    }
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
 
-    function toggleTask(id) {
-        const task = tasks.find(t => t.id === id);
-        task.done = !task.done;
-        // Timestamp when finished
-        if(task.done) {
-            task.completedAt = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        } else {
-            task.completedAt = '';
-        }
-        saveAndRender();
-    }
-
-    function deleteTask(id, e) {
-        e.stopPropagation(); // Stop click from toggling "done"
-        tasks = tasks.filter(t => t.id !== id);
-        saveAndRender();
-    }
-
-    function saveAndRender() {
-        localStorage.setItem('sage_tasks', JSON.stringify(tasks));
-        renderTasks();
-    }
-
-    function renderTasks() {
-        const list = document.getElementById('taskList');
-        list.innerHTML = '';
+        running = true;
         
-        // Sort: Not Done first, then Done
-        tasks.sort((a, b) => a.done - b.done);
-
-        tasks.forEach(task => {
-            const li = document.createElement('li');
-            if(task.done) li.classList.add('done');
+        interval = setInterval(() => {
+            time--;
+            updateDisplay();
             
-            li.innerHTML = `
-                <div class="task-content" onclick="toggleTask(${task.id})">
-                    <span class="room-badge">RM ${task.room}</span>
-                    <span class="task-text">${task.text}</span>
-                    <span class="time-stamp">
-                        Created: ${task.created} 
-                        ${task.done ? ' | ✅ Done: ' + task.completedAt : ''}
-                    </span>
-                </div>
-                <div class="delete-btn" onclick="deleteTask(${task.id}, event)">✕</div>
-            `;
-            list.appendChild(li);
-        });
+            if(time <= 10 && time > 0) beep(400, 100); 
+
+            if(time <= 0) {
+                stopTimer();
+                triggerAlarm();
+            }
+        }, 1000);
     }
 
-    function clearAll() {
-        if(confirm("End Shift? This will wipe the list. (Download CSV first!)")) {
-            tasks = [];
-            saveAndRender();
-        }
+    function stopTimer() {
+        running = false;
+        clearInterval(interval);
     }
 
-    // --- THE EXPORT ENGINE (The Receipt) ---
-    function exportCSV() {
-        if(tasks.length === 0) { alert("List is empty!"); return; }
+    function triggerAlarm() {
+        document.getElementById('alertScreen').style.display = 'flex';
+        beep(800, 300);
+        setTimeout(() => beep(800, 300), 400);
+        setTimeout(() => beep(800, 600), 800);
+    }
 
-        let csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += "Room,Task,Created Time,Status,Completed Time\n"; // Header
+    function resetCycle() {
+        document.getElementById('alertScreen').style.display = 'none';
+        time = 120;
+        cycle++;
+        document.getElementById('cycle').innerText = cycle;
+        updateDisplay();
+        startTimer();
+    }
 
-        tasks.forEach(t => {
-            const status = t.done ? "COMPLETED" : "PENDING";
-            // Escape commas in task text so it doesn't break CSV
-            const safeText = t.text.replace(/,/g, " "); 
-            const row = `${t.room},${safeText},${t.created},${status},${t.completedAt}`;
-            csvContent += row + "\n";
-        });
+    function updateDisplay() {
+        let min = Math.floor(time / 60);
+        let sec = time % 60;
+        document.getElementById('time').innerText = 
+            `${min}:${sec < 10 ? '0' : ''}${sec}`;
+    }
 
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        const dateStr = new Date().toLocaleDateString().replace(/\//g, "-");
-        link.setAttribute("download", `SageWire_Report_${dateStr}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    function beep(freq, duration) {
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.frequency.value = freq;
+        osc.type = 'square';
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        setTimeout(() => osc.stop(), duration);
     }
 </script>
 </body>
