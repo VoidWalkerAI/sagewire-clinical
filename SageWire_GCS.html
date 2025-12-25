@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SageWire GCS</title>
+    <style>
+        body { background: #f3e5f5; font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+        .header { background: #4a148c; color: white; padding: 15px; font-weight: bold; border-radius: 8px; text-align: center; margin-bottom: 20px; }
+        .category-label { font-weight:bold; color:#4a148c; margin-top:15px; text-transform:uppercase; font-size:0.9rem; }
+        select { width: 100%; padding: 15px; font-size: 1rem; border: 1px solid #ccc; border-radius: 8px; background: white; margin-top: 5px; }
+        .score-box { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; margin-top: 30px; }
+        .score-val { font-size: 3rem; font-weight: 900; color: #4a148c; }
+        .score-meaning { font-size: 1.2rem; color: #555; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="header">GLASGOW COMA SCALE</div>
+
+    <div class="category-label">Eye Opening (4)</div>
+    <select id="eyes" onchange="calcGCS()">
+        <option value="4">4 - Spontaneous</option>
+        <option value="3">3 - To Sound</option>
+        <option value="2">2 - To Pressure</option>
+        <option value="1">1 - None</option>
+    </select>
+
+    <div class="category-label">Verbal Response (5)</div>
+    <select id="verbal" onchange="calcGCS()">
+        <option value="5">5 - Oriented</option>
+        <option value="4">4 - Confused</option>
+        <option value="3">3 - Words (Inappropriate)</option>
+        <option value="2">2 - Sounds (Incomprehensible)</option>
+        <option value="1">1 - None</option>
+    </select>
+
+    <div class="category-label">Motor Response (6)</div>
+    <select id="motor" onchange="calcGCS()">
+        <option value="6">6 - Obey Commands</option>
+        <option value="5">5 - Localizing (Push away)</option>
+        <option value="4">4 - Normal Flexion (Pull away)</option>
+        <option value="3">3 - Abnormal Flexion (Decorticate)</option>
+        <option value="2">2 - Extension (Decerebrate)</option>
+        <option value="1">1 - None</option>
+    </select>
+
+    <div class="score-box">
+        <div>TOTAL SCORE</div>
+        <div class="score-val" id="total">15</div>
+        <div class="score-meaning" id="meaning">Normal</div>
+    </div>
+
+<script>
+    function calcGCS() {
+        const e = parseInt(document.getElementById('eyes').value);
+        const v = parseInt(document.getElementById('verbal').value);
+        const m = parseInt(document.getElementById('motor').value);
+        const total = e + v + m;
+
+        document.getElementById('total').innerText = total;
+        
+        let msg = "Normal";
+        if(total <= 8) msg = "SEVERE (Coma - Intubate)";
+        else if(total <= 12) msg = "MODERATE Injury";
+        else if(total < 15) msg = "MILD Injury";
+        
+        document.getElementById('meaning').innerText = msg;
+        document.getElementById('meaning').style.color = total <= 8 ? "#d32f2f" : "#555";
+    }
+</script>
+</body>
+</html>
