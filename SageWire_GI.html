@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SageWire Clinical | GI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* SAGE GREEN PALETTE */
+            --col-scrub: #2e7d32; /* Forest/Sage Green */
+            --col-scrub-dark: #1b5e20;
+            --col-white: #ffffff;
+            --col-bg: #e8f5e9; /* Very Light Green BG */
+            --col-text: #263238;
+            --col-sub: #546e7a;
+            --col-accent: #ff6f00; /* Amber/Brown for scripts */
+            --col-active: #c8e6c9; /* Active Playing Color */
+            
+            --shadow-card: 0 2px 8px rgba(0,0,0,0.08);
+            --font-main: 'Inter', sans-serif;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--col-bg);
+            color: var(--col-text);
+            font-family: var(--font-main);
+            margin: 0; padding: 0;
+            height: 100dvh;
+            display: flex; flex-direction: column;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            background: var(--col-scrub);
+            color: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            flex: 0 0 auto;
+            z-index: 10;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .brand {
+            font-weight: 800; font-size: 1.1rem; letter-spacing: -0.5px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .dept-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 8px; border-radius: 4px;
+            font-size: 0.7rem; font-weight: 600; letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* --- SEARCH --- */
+        .search-container {
+            background: var(--col-scrub);
+            padding: 0 20px 15px 20px;
+            flex: 0 0 auto;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: none; border-radius: 8px;
+            font-family: var(--font-main); font-size: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            outline: none;
+        }
+        .search-input::placeholder { color: #a5d6a7; } /* Lighter green placeholder */
+
+        /* --- LIST --- */
+        .card-list {
+            flex: 1; overflow-y: auto;
+            padding: 15px;
+            max-width: 600px; margin: 0 auto; width: 100%;
+            padding-bottom: 80px;
+        }
+
+        /* --- CARDS --- */
+        .med-card {
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            transition: transform 0.2s;
+            border-left: 5px solid transparent;
+        }
+        .med-card.expanded {
+            border-left-color: var(--col-accent);
+            transform: scale(1.01);
+        }
+        .med-card.playing {
+            border-left-color: var(--col-scrub);
+            background: #e8f5e9;
+        }
+
+        /* CARD HEADER */
+        .card-head {
+            padding: 15px;
+            cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .term-title {
+            font-weight: 800; font-size: 1.1rem; color: var(--col-scrub-dark);
+        }
+        .term-trans {
+            font-size: 0.9rem; color: var(--col-sub); font-weight: 600;
+        }
+        
+        /* CARD BODY */
+        .card-body {
+            display: none;
+            padding: 0 15px 15px 15px;
+            border-top: 1px solid #eee;
+            background: #fafafa;
+            animation: slideDown 0.3s ease-out;
+        }
+        .med-card.expanded .card-body { display: block; }
+
+        .script-box {
+            background: #fff3e0; /* Pale Orange/Cream */
+            border-left: 4px solid var(--col-accent);
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.95rem; line-height: 1.5;
+            color: #3e2723;
+        }
+        .script-label {
+            font-size: 0.7rem; font-weight: 800; color: #ef6c00;
+            text-transform: uppercase; margin-bottom: 4px; display: block;
+        }
+
+        /* AUDIO BUTTONS */
+        .btn-speak {
+            background: #eceff1; border: none; border-radius: 50%;
+            width: 32px; height: 32px; font-size: 1rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            margin-left: 10px; color: var(--col-sub);
+        }
+        .btn-speak:active { background: var(--col-accent); color: white; }
+
+        /* --- PODCAST PLAYER --- */
+        .podcast-deck {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: white; border-top: 1px solid #ddd;
+            padding: 12px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+        .podcast-info { font-size: 0.8rem; color: var(--col-sub); font-weight: 600; }
+        .podcast-btn {
+            background: var(--col-text); color: white;
+            border: none; padding: 10px 20px; border-radius: 20px;
+            font-weight: bold; font-size: 0.85rem; letter-spacing: 0.5px;
+            cursor: pointer; display: flex; align-items: center; gap: 8px;
+        }
+        .podcast-btn.active { background: var(--col-scrub); animation: pulse 2s infinite; }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(46, 125, 50, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="brand">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20h2a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.5a2.5 2.5 0 0 1-2.5-2.5v0a2.5 2.5 0 0 0-2.5-2.5h-5A2.5 2.5 0 0 0 4 1.5v0A2.5 2.5 0 0 1 1.5 4H1a1 1 0 0 0-1 1v13a2 2 0 0 0 2 2h2"/><path d="M5 16h6"/><path d="M5 12h6"/><path d="M5 8h6"/></svg>
+            SAGEWIRE CLINICAL
+        </div>
+        <span class="dept-badge">G.I.</span>
+    </div>
+
+    <div class="search-container">
+        <input type="text" class="search-input" id="searchBar" placeholder="Search gut..." onkeyup="filterList()">
+    </div>
+
+    <div class="card-list" id="cardContainer"></div>
+
+    <div class="podcast-deck">
+        <div class="podcast-info" id="podcastStatus">Podcast Mode: OFF</div>
+        <button class="podcast-btn" id="btnPodcast" onclick="togglePodcast()">
+            <span>▶ PLAY ALL</span>
+        </button>
+    </div>
+
+<script>
+    /* --- THE DATABASE (GI) --- */
+    const dictionary = [
+        {
+            term: "GERD (Reflux)",
+            trans: "Leaky Valve",
+            script: "There is a valve at the top of your stomach that acts like a lid. Right now, that lid isn't closing tight enough, so stomach acid is splashing back up into your throat like a drink spilling without a cap."
+        },
+        {
+            term: "Bowel Obstruction",
+            trans: "Kinked Hose",
+            script: "Think of a kink in a garden hose. Nothing can pass through that spot, and everything is backing up behind it. We need to unkink it so things can flow again."
+        },
+        {
+            term: "Cirrhosis",
+            trans: "Scarred Filter",
+            script: "Your liver acts like a filter for your blood. Imagine a soft sponge turning into a hard rock. Because of the scarring, it can't soak up toxins or let blood flow through it easily anymore."
+        },
+        {
+            term: "Pancreatitis",
+            trans: "Angry Factory",
+            script: "Your pancreas makes juices to digest food. Right now, those strong juices are getting stuck inside the pancreas and irritating it, basically starting to digest the organ itself instead of the food."
+        },
+        {
+            term: "Diverticulitis",
+            trans: "Infected Pockets",
+            script: "Imagine the inner wall of your colon has developed tiny little pouches, like bubbles on a tire. One of those pouches has trapped some bacteria and gotten infected."
+        },
+        {
+            term: "Hernia",
+            trans: "Muscle Tear",
+            script: "Your muscle wall holds your organs in place like a corset. There is a weak spot or a small hole in that corset, and a piece of your intestine is poking through it."
+        },
+        {
+            term: "Gastroenteritis",
+            trans: "System Flush",
+            script: "Your stomach and intestines are irritated by a virus. The body is hitting the Eject button on everything inside to try and flush out the bug as fast as possible."
+        },
+        {
+            term: "C. Diff",
+            trans: "Hostile Takeover",
+            script: "Good bacteria usually guard your gut. Right now, a bully bacteria has taken over and killed off the good guys, causing inflammation and those frequent bathroom trips."
+        },
+        {
+            term: "Crohn's Disease",
+            trans: "Raw Lining",
+            script: "Imagine getting a carpet burn on your skin, but on the inside of your intestines. Your immune system is attacking the lining, leaving it raw and swollen."
+        },
+        {
+            term: "Appendicitis",
+            trans: "Bursting Balloon",
+            script: "The appendix is a small pouch attached to your gut. It has become blocked and swollen like a balloon filling with water. We need to remove it before it pops."
+        },
+        {
+            term: "Melena",
+            trans: "Old Blood",
+            script: "This indicates bleeding higher up in your digestion system. By the time the blood travels all the way through, it turns dark and tar-like."
+        },
+        {
+            term: "Dysphagia",
+            trans: "Traffic Control Error",
+            script: "The coordination between your mouth and throat is off. It is like a traffic light malfunction; the muscles aren't opening and closing in the right order to let food down safely."
+        }
+    ];
+
+    /* --- LOGIC --- */
+    const container = document.getElementById('cardContainer');
+    let isPodcastRunning = false;
+    let podcastIndex = 0;
+    let utterance = null;
+
+    function renderList(items) {
+        container.innerHTML = '';
+        items.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'med-card';
+            card.id = `card-${index}`;
+            card.innerHTML = `
+                <div class="card-head" onclick="toggleCard(this)">
+                    <div style="flex:1">
+                        <div class="term-title">${item.term}</div>
+                        <div class="term-trans">${item.trans}</div>
+                    </div>
+                    <button class="btn-speak" onclick="speakOne(event, ${index})">🔊</button>
+                </div>
+                <div class="card-body">
+                    <div class="script-box">
+                        <span class="script-label">SAY THIS:</span>
+                        "${item.script}"
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function toggleCard(header) {
+        const card = header.parentElement;
+        const isExpanded = card.classList.contains('expanded');
+        document.querySelectorAll('.med-card').forEach(c => c.classList.remove('expanded'));
+        if (!isExpanded) card.classList.add('expanded');
+    }
+
+    function filterList() {
+        const query = document.getElementById('searchBar').value.toLowerCase();
+        const filtered = dictionary.filter(item => 
+            item.term.toLowerCase().includes(query) || 
+            item.trans.toLowerCase().includes(query)
+        );
+        renderList(filtered);
+    }
+
+    /* --- AUDIO ENGINE --- */
+    function speakOne(e, index) {
+        e.stopPropagation(); 
+        window.speechSynthesis.cancel();
+        isPodcastRunning = false;
+        updatePodcastUI();
+        
+        const item = dictionary[index];
+        const text = `${item.term}. Translation: ${item.trans}. Script: ${item.script}`;
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = 0.9; 
+        window.speechSynthesis.speak(u);
+    }
+
+    function togglePodcast() {
+        if (isPodcastRunning) {
+            isPodcastRunning = false;
+            window.speechSynthesis.cancel();
+            updatePodcastUI();
+        } else {
+            isPodcastRunning = true;
+            podcastIndex = 0;
+            updatePodcastUI();
+            playNextPodcastItem();
+        }
+    }
+
+    function playNextPodcastItem() {
+        if (!isPodcastRunning) return;
+        if (podcastIndex >= dictionary.length) {
+            isPodcastRunning = false;
+            updatePodcastUI();
+            return;
+        }
+
+        document.querySelectorAll('.med-card').forEach(c => c.classList.remove('playing'));
+        const activeCard = document.getElementById(`card-${podcastIndex}`);
+        if(activeCard) {
+            activeCard.classList.add('playing');
+            activeCard.scrollIntoView({behavior: "smooth", block: "center"});
+        }
+
+        const item = dictionary[podcastIndex];
+        const text = `Next Term: ${item.term}. Translation: ${item.trans}. . . Say this: ${item.script}`;
+        
+        utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        utterance.onend = () => {
+            podcastIndex++;
+            setTimeout(playNextPodcastItem, 1500);
+        };
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function updatePodcastUI() {
+        const btn = document.getElementById('btnPodcast');
+        const status = document.getElementById('podcastStatus');
+        
+        if (isPodcastRunning) {
+            btn.innerHTML = "<span>■ STOP</span>";
+            btn.classList.add('active');
+            status.innerText = "Playing: " + (podcastIndex + 1) + "/" + dictionary.length;
+        } else {
+            btn.innerHTML = "<span>▶ PLAY ALL</span>";
+            btn.classList.remove('active');
+            status.innerText = "Podcast Mode: OFF";
+            document.querySelectorAll('.med-card').forEach(c => c.classList.remove('playing'));
+        }
+    }
+
+    renderList(dictionary);
+
+</script>
+</body>
+</html>
