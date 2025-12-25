@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SageWire Clinical | Respiratory</title>
+    <title>SageWire Clinical | Neuro</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            /* OXYGEN BLUE PALETTE */
-            --col-scrub: #0277bd; /* Oxygen Blue */
-            --col-scrub-dark: #01579b;
+            /* SYNAPSE PURPLE PALETTE */
+            --col-scrub: #673ab7; /* Deep Purple */
+            --col-scrub-dark: #4527a0;
             --col-white: #ffffff;
-            --col-bg: #e1f5fe; /* Very Light Blue BG */
+            --col-bg: #ede7f6; /* Very Light Purple BG */
             --col-text: #263238;
             --col-sub: #546e7a;
-            --col-accent: #ff9100; /* Amber Orange for scripts */
-            --col-active: #81d4fa; /* Active Playing Color */
+            --col-accent: #00bcd4; /* Cyan for scripts (Electric feel) */
+            --col-active: #d1c4e9; /* Active Playing Color */
             
             --shadow-card: 0 2px 8px rgba(0,0,0,0.08);
             --font-main: 'Inter', sans-serif;
@@ -68,7 +68,7 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             outline: none;
         }
-        .search-input::placeholder { color: #90a4ae; }
+        .search-input::placeholder { color: #9575cd; } /* Lighter purple placeholder */
 
         /* --- LIST --- */
         .card-list {
@@ -94,7 +94,7 @@
         }
         .med-card.playing {
             border-left-color: var(--col-scrub);
-            background: #e1f5fe;
+            background: #ede7f6;
         }
 
         /* CARD HEADER */
@@ -121,16 +121,16 @@
         .med-card.expanded .card-body { display: block; }
 
         .script-box {
-            background: #fff3e0; /* Pale Orange */
+            background: #e0f7fa; /* Pale Cyan */
             border-left: 4px solid var(--col-accent);
             padding: 12px;
             margin-top: 10px;
             border-radius: 0 4px 4px 0;
             font-size: 0.95rem; line-height: 1.5;
-            color: #3e2723;
+            color: #006064;
         }
         .script-label {
-            font-size: 0.7rem; font-weight: 800; color: #ef6c00;
+            font-size: 0.7rem; font-weight: 800; color: #0097a7;
             text-transform: uppercase; margin-bottom: 4px; display: block;
         }
 
@@ -166,9 +166,9 @@
             to { opacity: 1; transform: translateY(0); }
         }
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(2, 119, 189, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(2, 119, 189, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(2, 119, 189, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(103, 58, 183, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(103, 58, 183, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(103, 58, 183, 0); }
         }
 
     </style>
@@ -177,14 +177,14 @@
 
     <div class="header">
         <div class="brand">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a9.7 9.7 0 0 0 9.65-9.4c.05-3.32-2.13-6.22-5.35-7.1L12 3 7.7 5.5c-3.23.88-5.4 3.78-5.35 7.1A9.7 9.7 0 0 0 12 22Z"/><path d="M12 6a4 4 0 0 0 4 4"/><path d="M12 6a4 4 0 0 1-4 4"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-4A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-4A2.5 2.5 0 0 0 14.5 2Z"/></svg>
             SAGEWIRE CLINICAL
         </div>
-        <span class="dept-badge">RESP</span>
+        <span class="dept-badge">NEURO</span>
     </div>
 
     <div class="search-container">
-        <input type="text" class="search-input" id="searchBar" placeholder="Search lungs..." onkeyup="filterList()">
+        <input type="text" class="search-input" id="searchBar" placeholder="Search brain..." onkeyup="filterList()">
     </div>
 
     <div class="card-list" id="cardContainer"></div>
@@ -197,67 +197,67 @@
     </div>
 
 <script>
-    /* --- THE DATABASE (RESPIRATORY) --- */
+    /* --- THE DATABASE (NEURO) --- */
     const dictionary = [
         {
-            term: "Asthma",
-            trans: "Tight Airways",
-            script: "Imagine trying to breathe through a tiny coffee stirrer instead of a garden hose. The muscles around your airways are squeezing tight, making the tube smaller, which is why it's hard to get air in."
+            term: "CVA (Stroke)",
+            trans: "Brain Attack",
+            script: "Think of it like a power outage in a specific neighborhood of a city. A blocked vessel stopped the electricity, or blood, from getting to that part of the brain, so the lights went out in that area."
         },
         {
-            term: "C.O.P.D.",
-            trans: "Floppy Lungs",
-            script: "Think of a brand new balloon, it snaps back when you let the air out. Your lungs are like an old balloon that has been blown up too many times; they are loose and don't push the old air out effectively to make room for fresh air."
+            term: "TIA (Mini-Stroke)",
+            trans: "Warning Flicker",
+            script: "This was like a lightbulb flickering for a few minutes but staying on. The blockage cleared itself quickly before permanent damage happened, but it is a warning sign we need to check the wiring."
         },
         {
-            term: "Pneumonia",
-            trans: "Soggy Sponge",
-            script: "Your lungs are like a dry sponge that holds air. Right now, a section of that sponge is soggy and heavy with infection, so it can't hold oxygen until we dry it out."
+            term: "Seizure",
+            trans: "Electrical Storm",
+            script: "Normally, your brain sends organized signals. A seizure is like a sudden lightning storm where all the electricity fires at once, causing a temporary system overload."
         },
         {
-            term: "Atelectasis",
-            trans: "Deflated Grapes",
-            script: "Deep inside your lungs, there are tiny air sacs that look like bunches of grapes. Because you haven't taken deep breaths lately, some of them have shriveled up like raisins. We need to reinflate them."
+            term: "Neuropathy",
+            trans: "Frayed Wires",
+            script: "The nerves in your feet are like phone charging cables that are a bit frayed. They are sending static or 'false signals' to your brain, which feels like burning or tingling even when nothing is touching you."
         },
         {
-            term: "Pulmonary Embolism (PE)",
-            trans: "Lung Blockage",
-            script: "A blood clot has traveled to your lung. It is like a roadblock on a major highway. The air is getting into the lung, but the blood can't get past the roadblock to pick up the oxygen."
+            term: "Aphasia",
+            trans: "Broken Keyboard",
+            script: "You know what you want to say, but the connection between your brain and your mouth is laggy. It is like typing on a keyboard where the keys are stuck; the thoughts are there, but the words won't come out."
         },
         {
-            term: "Pleural Effusion",
-            trans: "Water Around Lung",
-            script: "Your lung is normally wrapped in a thin sheet. Right now, fluid is building up between the lung and that sheet, squeezing the lung from the outside so it can't expand fully."
+            term: "Dementia",
+            trans: "Scattered Library",
+            script: "Imagine a library where the books have been knocked off the shelves. The stories are still there, but it takes a long time to find the right one because they aren't in the right order anymore."
         },
         {
-            term: "Pneumothorax",
-            trans: "Collapsed Lung",
-            script: "Imagine a soda can getting crushed. Air has leaked out of your lung and is trapped inside your chest cavity, pushing against the lung and collapsing it so it can't inflate."
+            term: "Concussion",
+            trans: "Brain Bruise",
+            script: "Your brain floats in fluid inside your skull. The hit caused it to bump against the hard wall of the skull, leaving a bruise that needs rest to heal, just like a bruise on your arm."
         },
         {
-            term: "Bronchitis",
-            trans: "Swollen Pipes",
-            script: "The large tubes that carry air into your lungs are swollen and angry, kind of like a rash on the inside. That swelling makes you cough to try and clear the irritation."
+            term: "Vertigo",
+            trans: "Gyroscope Error",
+            script: "Your inner ear works like a gyroscope to tell you which way is up. Right now, it is sending the wrong data to your brain, making you feel like the room is spinning even though you are standing still."
         },
         {
-            term: "Hypoxia",
-            trans: "Fuel Shortage",
-            script: "Your body runs on oxygen like a car runs on gas. Right now, the fuel gauge is reading low, so your organs aren't getting the energy they need to work properly."
+            term: "Meningitis",
+            trans: "Swollen Helmet",
+            script: "Your brain and spine have a protective wrapping. Right now, that wrapping is swollen and angry due to an infection, kind of like a tight helmet squeezing your head and causing pain."
         },
         {
-            term: "Tachypnea",
-            trans: "Panting",
-            script: "You are breathing very fast, kind of like you just ran a race, even though you are sitting still. Your body is trying to catch up on oxygen quickly."
+            term: "Coma",
+            trans: "Deep Standby",
+            script: "The brain has sustained heavy damage, so it has put itself into a deep 'Sleep Mode' to focus all its energy on healing. It is still running the basics, but the screen is off."
         },
         {
-            term: "Sputum",
-            trans: "Lung Trash",
-            script: "This is the mucus coming up from deep in your chest. Think of it like a broom sweeping trash out of a house; your lungs are trying to sweep out the infection."
+            term: "Migraine",
+            trans: "Sensory Overload",
+            script: "Your brain is processing lights, sounds, and feelings way too intensely right now. It is like turning the volume knob up to 100 on a stereo; everything feels overwhelming and painful."
         },
         {
-            term: "Wheezing",
-            trans: "Whistling Pipes",
-            script: "When air tries to force its way through a tight, narrow tube, it makes a whistling sound. That is the sound of your airways squeezing shut slightly."
+            term: "Synapse",
+            trans: "Spark Plug",
+            script: "This is the tiny gap where the signal jumps from one nerve to another, just like a spark plug in an engine. We need that spark to jump cleanly for the message to get through."
         }
     ];
 
