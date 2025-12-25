@@ -2,34 +2,93 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SageWire CPR v2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SageWire CPR v2.1</title>
     <style>
-        body { background: #ffebee; font-family: sans-serif; text-align: center; display: flex; flex-direction: column; height: 100vh; margin: 0; overflow: hidden; }
+        /* Use 100dvh to account for mobile browser bars */
+        body { 
+            background: #ffebee; 
+            font-family: sans-serif; 
+            text-align: center; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100dvh; 
+            margin: 0; 
+            overflow: hidden; 
+        }
         
-        .header { background: #d32f2f; color: white; padding: 15px; font-weight: 900; font-size: 1.5rem; letter-spacing: 1px; }
+        .header { 
+            background: #d32f2f; 
+            color: white; 
+            padding: 15px; 
+            font-weight: 900; 
+            font-size: 1.2rem; 
+            letter-spacing: 1px; 
+            flex: 0 0 auto; /* Don't shrink */
+        }
         
-        /* The Big Timer */
-        .timer-display { font-size: 7rem; font-weight: 900; color: #b71c1c; margin-top: 40px; font-variant-numeric: tabular-nums; }
-        .cycle-count { font-size: 1.5rem; color: #555; margin-bottom: 30px; font-weight: bold; }
+        /* Main content area expands to fill space */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        /* Responsive Text: Shrinks on small phones, grows on big ones */
+        .timer-display { 
+            font-size: clamp(5rem, 25vw, 9rem); 
+            font-weight: 900; 
+            color: #b71c1c; 
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+        }
         
-        /* Buttons */
-        .btn-container { margin-top: auto; padding: 20px; display: flex; gap: 10px; height: 120px; }
-        button { flex: 1; border: none; border-radius: 10px; font-size: 1.5rem; font-weight: 900; cursor: pointer; text-transform: uppercase; }
+        .cycle-count { 
+            font-size: clamp(1.2rem, 5vw, 2rem); 
+            color: #555; 
+            margin-top: 10px; 
+            font-weight: bold; 
+        }
+        
+        /* Buttons stick to bottom but respect padding */
+        .btn-container { 
+            padding: 15px; 
+            display: flex; 
+            gap: 10px; 
+            height: auto;
+            flex: 0 0 auto; 
+            margin-bottom: safe-area-inset-bottom; /* For iPhone X+ */
+        }
+        
+        button { 
+            flex: 1; 
+            border: none; 
+            border-radius: 12px; 
+            font-size: 1.3rem; 
+            font-weight: 900; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            padding: 20px 0;
+        }
+        
         .btn-start { background: #d32f2f; color: white; box-shadow: 0 4px 0 #b71c1c; }
         .btn-start:active { transform: translateY(4px); box-shadow: none; }
-        .btn-stop { background: #455a64; color: white; max-width: 100px; box-shadow: 0 4px 0 #263238; }
+        
+        .btn-stop { background: #455a64; color: white; max-width: 30%; box-shadow: 0 4px 0 #263238; }
         .btn-stop:active { transform: translateY(4px); box-shadow: none; }
 
-        /* The "Pulse Check" Overlay */
+        /* Overlay */
         .pulse-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #ffeb3b; color: black; 
             display: none; flex-direction: column; justify-content: center; align-items: center; 
             z-index: 999; cursor: pointer;
         }
-        .pulse-title { font-size: 4rem; font-weight: 900; text-transform: uppercase; margin-bottom: 20px; }
-        .pulse-sub { font-size: 1.5rem; font-weight: bold; animation: blink 1s infinite; background: black; color: #ffeb3b; padding: 10px 20px; border-radius: 50px; }
+        .pulse-title { font-size: clamp(3rem, 15vw, 6rem); font-weight: 900; text-transform: uppercase; margin-bottom: 20px; }
+        .pulse-sub { font-size: 1.2rem; font-weight: bold; animation: blink 1s infinite; background: black; color: #ffeb3b; padding: 10px 20px; border-radius: 50px; }
         
         @keyframes blink { 0% {opacity:1;} 50% {opacity:0.3;} 100% {opacity:1;} }
     </style>
@@ -38,8 +97,10 @@
 
     <div class="header">CODE BLUE ASSIST</div>
     
-    <div class="timer-display" id="time">02:00</div>
-    <div class="cycle-count">CYCLE: <span id="cycle">1</span></div>
+    <div class="main-content">
+        <div class="timer-display" id="time">02:00</div>
+        <div class="cycle-count">CYCLE: <span id="cycle">1</span></div>
+    </div>
     
     <div class="pulse-overlay" id="alertScreen" onclick="resetCycle()">
         <div class="pulse-title">SWITCH!</div>
@@ -48,7 +109,7 @@
 
     <div class="btn-container">
         <button class="btn-stop" onclick="stopTimer()">Stop</button>
-        <button class="btn-start" onclick="startTimer()">START CPR</button>
+        <button class="btn-start" onclick="startTimer()">START</button>
     </div>
 
 <script>
@@ -56,12 +117,11 @@
     let running = false;
     let cycle = 1;
     let interval;
-    let audioCtx; // The Synthesizer
+    let audioCtx; 
 
     function startTimer() {
         if(running) return;
         
-        // Unlock Audio Engine on first click (Required by browsers)
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if (audioCtx.state === 'suspended') audioCtx.resume();
 
@@ -71,7 +131,6 @@
             time--;
             updateDisplay();
             
-            // Warning Beeps at 10 seconds left
             if(time <= 10 && time > 0) beep(400, 100); 
 
             if(time <= 0) {
@@ -87,24 +146,18 @@
     }
 
     function triggerAlarm() {
-        // Show Flash Screen
         document.getElementById('alertScreen').style.display = 'flex';
-        
-        // Play Triple Loud Beep
         beep(800, 300);
         setTimeout(() => beep(800, 300), 400);
         setTimeout(() => beep(800, 600), 800);
     }
 
     function resetCycle() {
-        // Hide Screen
         document.getElementById('alertScreen').style.display = 'none';
-        // Reset Logic
         time = 120;
         cycle++;
         document.getElementById('cycle').innerText = cycle;
         updateDisplay();
-        // Auto-Start Next Round
         startTimer();
     }
 
@@ -115,18 +168,14 @@
             `${min}:${sec < 10 ? '0' : ''}${sec}`;
     }
 
-    // --- THE SYNTHESIZER (Makes sound without files) ---
     function beep(freq, duration) {
         if (!audioCtx) return;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        
         osc.frequency.value = freq;
-        osc.type = 'square'; // Nasty loud sound
-        
+        osc.type = 'square';
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-        
         osc.start();
         setTimeout(() => osc.stop(), duration);
     }
