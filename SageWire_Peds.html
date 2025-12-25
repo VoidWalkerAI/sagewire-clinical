@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SageWire Peds</title>
+    <style>
+        body { background: #e1bee7; font-family: sans-serif; padding: 20px; text-align: center; }
+        .header { background: #7b1fa2; color: white; padding: 15px; font-weight: bold; border-radius: 8px; margin-bottom: 20px; }
+        .warning { font-size: 0.7rem; color: #555; margin-bottom: 20px; font-style: italic; }
+        select { width: 100%; padding: 15px; font-size: 1.1rem; border: 2px solid #9c27b0; border-radius: 8px; background: white; margin-bottom: 20px; }
+        .card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 10px; text-align: left; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .label { font-weight: bold; color: #7b1fa2; font-size: 0.9rem; text-transform: uppercase; }
+        .value { font-weight: 900; font-size: 1.5rem; color: #333; }
+    </style>
+</head>
+<body>
+
+    <div class="header">TINY HUMAN VITALS</div>
+    <div class="warning">⚠️ Ranges are estimates based on PALS guidelines.</div>
+
+    <label style="font-weight:bold; display:block; margin-bottom:10px; color:#4a148c;">Select Patient Age:</label>
+    <select id="ageSelector" onchange="updateVitals()">
+        <option value="neo">Neonate (0-1 mo)</option>
+        <option value="inf">Infant (1-12 mo)</option>
+        <option value="tod">Toddler (1-3 yr)</option>
+        <option value="pre">Preschool (3-5 yr)</option>
+        <option value="sch">School Age (6-12 yr)</option>
+        <option value="ado">Adolescent (13+ yr)</option>
+    </select>
+
+    <div class="card">
+        <div class="label">Heart Rate<br>(Resting)</div>
+        <div class="value" id="hr">100-205</div>
+    </div>
+
+    <div class="card">
+        <div class="label">Resp Rate<br>(Breaths/min)</div>
+        <div class="value" id="rr">30-60</div>
+    </div>
+
+    <div class="card">
+        <div class="label">Systolic BP<br>(Low Limit)</div>
+        <div class="value" id="bp">60</div>
+    </div>
+
+<script>
+    const data = {
+        neo: { hr: "100-205", rr: "30-60", bp: "60" },
+        inf: { hr: "100-180", rr: "30-53", bp: "70" },
+        tod: { hr: "98-140", rr: "22-37", bp: "70 + (2xAge)" },
+        pre: { hr: "80-120", rr: "20-28", bp: "70 + (2xAge)" },
+        sch: { hr: "75-118", rr: "18-25", bp: "70 + (2xAge)" },
+        ado: { hr: "60-100", rr: "12-20", bp: "90" }
+    };
+
+    function updateVitals() {
+        const key = document.getElementById('ageSelector').value;
+        const info = data[key];
+        document.getElementById('hr').innerText = info.hr;
+        document.getElementById('rr').innerText = info.rr;
+        document.getElementById('bp').innerText = info.bp;
+    }
+    // Init
+    updateVitals();
+</script>
+</body>
+</html>
