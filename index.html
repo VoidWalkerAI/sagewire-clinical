@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SageWire Clinical | Cardio v1.1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* CLINICAL PALETTE */
+            --col-scrub: #00897b; /* Teal */
+            --col-scrub-dark: #00695c;
+            --col-white: #ffffff;
+            --col-bg: #f4f7f6;
+            --col-text: #263238;
+            --col-sub: #546e7a;
+            --col-accent: #ffb74d; /* Warm Orange for scripts */
+            --col-active: #cddc39; /* Podcast Active Color */
+            
+            --shadow-card: 0 2px 8px rgba(0,0,0,0.08);
+            --font-main: 'Inter', sans-serif;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--col-bg);
+            color: var(--col-text);
+            font-family: var(--font-main);
+            margin: 0; padding: 0;
+            height: 100dvh;
+            display: flex; flex-direction: column;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            background: var(--col-scrub);
+            color: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            flex: 0 0 auto;
+            z-index: 10;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .brand {
+            font-weight: 800; font-size: 1.1rem; letter-spacing: -0.5px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .dept-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 8px; border-radius: 4px;
+            font-size: 0.7rem; font-weight: 600; letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* --- SEARCH --- */
+        .search-container {
+            background: var(--col-scrub);
+            padding: 0 20px 15px 20px;
+            flex: 0 0 auto;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: none; border-radius: 8px;
+            font-family: var(--font-main); font-size: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            outline: none;
+        }
+        .search-input::placeholder { color: #90a4ae; }
+
+        /* --- LIST --- */
+        .card-list {
+            flex: 1; overflow-y: auto;
+            padding: 15px;
+            max-width: 600px; margin: 0 auto; width: 100%;
+            padding-bottom: 80px; /* Space for Podcast Player */
+        }
+
+        /* --- CARDS --- */
+        .med-card {
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            transition: transform 0.2s;
+            border-left: 5px solid transparent;
+            position: relative;
+        }
+        .med-card.expanded {
+            border-left-color: var(--col-accent);
+            transform: scale(1.01);
+        }
+        .med-card.playing {
+            border-left-color: var(--col-active);
+            background: #f9fbe7;
+        }
+
+        /* CARD HEADER */
+        .card-head {
+            padding: 15px;
+            cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .term-title {
+            font-weight: 800; font-size: 1.1rem; color: var(--col-scrub-dark);
+        }
+        .term-trans {
+            font-size: 0.9rem; color: var(--col-sub); font-weight: 600;
+        }
+        
+        /* CARD BODY (The Reveal) */
+        .card-body {
+            display: none;
+            padding: 0 15px 15px 15px;
+            border-top: 1px solid #eee;
+            background: #fafafa;
+            animation: slideDown 0.3s ease-out;
+        }
+        .med-card.expanded .card-body { display: block; }
+
+        .script-box {
+            background: #fff8e1; /* Pale yellow/orange */
+            border-left: 4px solid var(--col-accent);
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.95rem; line-height: 1.5;
+            color: #4e342e;
+        }
+        .script-label {
+            font-size: 0.7rem; font-weight: 800; color: #f57c00;
+            text-transform: uppercase; margin-bottom: 4px; display: block;
+        }
+
+        /* AUDIO BUTTONS */
+        .btn-speak {
+            background: #eceff1; border: none; border-radius: 50%;
+            width: 32px; height: 32px; font-size: 1rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            margin-left: 10px; color: var(--col-sub);
+        }
+        .btn-speak:active { background: var(--col-accent); color: white; }
+
+        /* --- PODCAST PLAYER (Fixed Footer) --- */
+        .podcast-deck {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: white; border-top: 1px solid #ddd;
+            padding: 12px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+        .podcast-info { font-size: 0.8rem; color: var(--col-sub); font-weight: 600; }
+        .podcast-btn {
+            background: var(--col-text); color: white;
+            border: none; padding: 10px 20px; border-radius: 20px;
+            font-weight: bold; font-size: 0.85rem; letter-spacing: 0.5px;
+            cursor: pointer; display: flex; align-items: center; gap: 8px;
+        }
+        .podcast-btn.active { background: var(--col-scrub); animation: pulse 2s infinite; }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 137, 123, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 137, 123, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 137, 123, 0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="brand">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"></path><path d="M3.5 12h6l.5-1 2 4.5 2-7 1.5 3.5h5"></path></svg>
+            SAGEWIRE CLINICAL
+        </div>
+        <span class="dept-badge">CARDIO</span>
+    </div>
+
+    <div class="search-container">
+        <input type="text" class="search-input" id="searchBar" placeholder="Search diagnosis..." onkeyup="filterList()">
+    </div>
+
+    <div class="card-list" id="cardContainer">
+        </div>
+
+    <div class="podcast-deck">
+        <div class="podcast-info" id="podcastStatus">Podcast Mode: OFF</div>
+        <button class="podcast-btn" id="btnPodcast" onclick="togglePodcast()">
+            <span>▶ PLAY ALL</span>
+        </button>
+    </div>
+
+<script>
+    /* --- THE DATABASE --- */
+    const dictionary = [
+        {
+            term: "Congestive Heart Failure",
+            trans: "Weak Pump",
+            script: "Imagine a sponge that is soaking wet. Your heart is like a pump that isn't squeezing hard enough to wring that sponge out, so fluid backs up into your lungs or legs. We need to help the pump squeeze better."
+        },
+        {
+            term: "Hypertension",
+            trans: "High Pressure",
+            script: "Think of a garden hose. If you turn the water on full blast and put your thumb over the end, the pressure builds up. That high pressure pushes hard against your artery walls, which can wear them out over time."
+        },
+        {
+            term: "Atrial Fibrillation",
+            trans: "Electrical Static",
+            script: "Your heart has its own electrical wiring. Right now, the top part of the heart is acting like a flickering lightbulb, it's quivering instead of beating steadily. This can cause blood to pool, so we need to fix the rhythm."
+        },
+        {
+            term: "Angina",
+            trans: "Muscle Cramp",
+            script: "You know how your leg cramps if you run too far without resting? Angina is basically a cramp in your heart muscle because it's working hard but not getting enough oxygen-rich blood."
+        },
+        {
+            term: "Thrombosis",
+            trans: "Traffic Jam",
+            script: "Think of your blood cells like cars on a highway. Sometimes, if traffic stops moving, the cars pile up and cause a jam. That jam is the clot."
+        },
+        {
+            term: "Aneurysm",
+            trans: "Ballooning Tire",
+            script: "Imagine a weak spot on a bicycle tire. When you pump it up, that weak spot bulges out like a bubble. It's fragile, and if the pressure gets too high, we worry it might pop."
+        },
+        {
+            term: "Atherosclerosis",
+            trans: "Rusty Pipes",
+            script: "Over years, gunk, or plaque, builds up on the inside of your arteries, kind of like rust inside an old pipe. This makes the opening smaller, so the heart has to work harder to push blood through."
+        },
+        {
+            term: "Syncope",
+            trans: "System Reboot",
+            script: "Your blood pressure dropped quickly, and not enough blood got to the brain for a second. Your brain basically hit the Reset button to protect itself, which is why you passed out."
+        },
+        {
+            term: "Bradycardia",
+            trans: "Low Idle",
+            script: "Your heart is running on a very low idle setting right now, beating slower than 60 times a minute. It might make you feel tired because the engine isn't revving up enough to give you energy."
+        },
+        {
+            term: "Ischemia",
+            trans: "Starving Muscle",
+            script: "Your heart muscle is working, but a blockage is preventing the fuel truck from getting there. The muscle is starving for oxygen, which is causing that pain."
+        },
+        {
+            term: "Dyspnea",
+            trans: "Air Hunger",
+            script: "It feels like no matter how deep of a breath you take, it’s not enough. Your heart and lungs are having a miscommunication about how much oxygen you need."
+        },
+        {
+            term: "Hypotension",
+            trans: "Low Water Pressure",
+            script: "Your blood pressure is low, like weak water pressure in a shower. It means blood isn't getting pushed up to your head quickly enough, which is why you feel dizzy when you stand up."
+        }
+    ];
+
+    /* --- LOGIC --- */
+    const container = document.getElementById('cardContainer');
+    let isPodcastRunning = false;
+    let podcastIndex = 0;
+    let utterance = null;
+
+    function renderList(items) {
+        container.innerHTML = '';
+        items.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'med-card';
+            card.id = `card-${index}`;
+            card.innerHTML = `
+                <div class="card-head" onclick="toggleCard(this)">
+                    <div style="flex:1">
+                        <div class="term-title">${item.term}</div>
+                        <div class="term-trans">${item.trans}</div>
+                    </div>
+                    <button class="btn-speak" onclick="speakOne(event, ${index})">🔊</button>
+                </div>
+                <div class="card-body">
+                    <div class="script-box">
+                        <span class="script-label">SAY THIS:</span>
+                        "${item.script}"
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function toggleCard(header) {
+        const card = header.parentElement;
+        const isExpanded = card.classList.contains('expanded');
+        document.querySelectorAll('.med-card').forEach(c => c.classList.remove('expanded'));
+        if (!isExpanded) card.classList.add('expanded');
+    }
+
+    function filterList() {
+        const query = document.getElementById('searchBar').value.toLowerCase();
+        // Since indices matter for audio, we re-render but maintain global indices via closure if needed.
+        // For prototype V1, we just filter simply. Note: Podcast mode follows default order.
+        const filtered = dictionary.filter(item => 
+            item.term.toLowerCase().includes(query) || 
+            item.trans.toLowerCase().includes(query)
+        );
+        renderList(filtered);
+    }
+
+    /* --- AUDIO ENGINE --- */
+    function speakOne(e, index) {
+        e.stopPropagation(); // Don't expand card
+        window.speechSynthesis.cancel();
+        isPodcastRunning = false;
+        updatePodcastUI();
+        
+        const item = dictionary[index];
+        const text = `${item.term}. Translation: ${item.trans}. Script: ${item.script}`;
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = 0.9; // Slightly slower for clarity
+        window.speechSynthesis.speak(u);
+    }
+
+    function togglePodcast() {
+        if (isPodcastRunning) {
+            // STOP
+            isPodcastRunning = false;
+            window.speechSynthesis.cancel();
+            updatePodcastUI();
+        } else {
+            // START
+            isPodcastRunning = true;
+            podcastIndex = 0;
+            updatePodcastUI();
+            playNextPodcastItem();
+        }
+    }
+
+    function playNextPodcastItem() {
+        if (!isPodcastRunning) return;
+        if (podcastIndex >= dictionary.length) {
+            isPodcastRunning = false; // End of list
+            updatePodcastUI();
+            return;
+        }
+
+        // Highlight visual
+        document.querySelectorAll('.med-card').forEach(c => c.classList.remove('playing'));
+        const activeCard = document.getElementById(`card-${podcastIndex}`);
+        if(activeCard) {
+            activeCard.classList.add('playing');
+            activeCard.scrollIntoView({behavior: "smooth", block: "center"});
+        }
+
+        const item = dictionary[podcastIndex];
+        const text = `Next Term: ${item.term}. Translation: ${item.trans}. . . Say this: ${item.script}`;
+        
+        utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        utterance.onend = () => {
+            podcastIndex++;
+            setTimeout(playNextPodcastItem, 1500); // 1.5s pause between cards
+        };
+        
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function updatePodcastUI() {
+        const btn = document.getElementById('btnPodcast');
+        const status = document.getElementById('podcastStatus');
+        
+        if (isPodcastRunning) {
+            btn.innerHTML = "<span>■ STOP</span>";
+            btn.classList.add('active');
+            status.innerText = "Playing: " + (podcastIndex + 1) + "/" + dictionary.length;
+        } else {
+            btn.innerHTML = "<span>▶ PLAY ALL</span>";
+            btn.classList.remove('active');
+            status.innerText = "Podcast Mode: OFF";
+            document.querySelectorAll('.med-card').forEach(c => c.classList.remove('playing'));
+        }
+    }
+
+    // Init
+    renderList(dictionary);
+
+</script>
+</body>
+</html>
