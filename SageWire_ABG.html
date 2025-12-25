@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SageWire ABG</title>
+    <style>
+        body { background: #fff8e1; font-family: sans-serif; padding: 20px; text-align: center; }
+        .header { background: #fbc02d; color: #333; padding: 15px; font-weight: bold; border-radius: 8px; margin-bottom: 20px; }
+        .warning { font-size: 0.7rem; color: #777; margin-bottom: 20px; font-style: italic; }
+        
+        .input-group { margin-bottom: 15px; text-align: left; }
+        label { font-weight: bold; color: #f57f17; display: block; margin-bottom: 5px; }
+        input { width: 100%; padding: 12px; border: 2px solid #ffca28; border-radius: 8px; font-size: 1.1rem; }
+        
+        button { background: #fbc02d; color: #333; border: none; padding: 15px; width: 100%; border-radius: 25px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
+        
+        .result-box { margin-top: 30px; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: none; }
+        .diagnosis { font-size: 1.8rem; font-weight: 900; color: #e65100; margin-bottom: 10px; }
+        .details { font-size: 1rem; color: #555; }
+    </style>
+</head>
+<body>
+
+    <div class="header">ABG DECODER</div>
+    <div class="warning">⚠️ Educational Aid Only. Verify clinical findings.</div>
+
+    <div class="input-group">
+        <label>pH (Normal: 7.35 - 7.45)</label>
+        <input type="number" id="ph" placeholder="e.g. 7.25">
+    </div>
+
+    <div class="input-group">
+        <label>PaCO2 (Normal: 35 - 45)</label>
+        <input type="number" id="paco2" placeholder="e.g. 50">
+    </div>
+
+    <div class="input-group">
+        <label>HCO3 (Normal: 22 - 26)</label>
+        <input type="number" id="hco3" placeholder="e.g. 24">
+    </div>
+
+    <button onclick="solveABG()">INTERPRET</button>
+
+    <div class="result-box" id="result">
+        <div class="diagnosis" id="diag">--</div>
+        <div class="details" id="reason">--</div>
+    </div>
+
+<script>
+    function solveABG() {
+        const ph = parseFloat(document.getElementById('ph').value);
+        const co2 = parseFloat(document.getElementById('paco2').value);
+        const hco3 = parseFloat(document.getElementById('hco3').value);
+
+        if(!ph || !co2 || !hco3) return;
+
+        let acidity = "";
+        let cause = "";
+
+        // 1. Determine Acidosis vs Alkalosis
+        if(ph < 7.35) acidity = "ACIDOSIS";
+        else if(ph > 7.45) acidity = "ALKALOSIS";
+        else acidity = "Normal pH";
+
+        // 2. Determine Cause (ROME)
+        // Acidosis (Low pH)
+        if (ph < 7.35) {
+            if (co2 > 45) cause = "RESPIRATORY"; // High CO2 (Acid) causes Acidosis
+            else if (hco3 < 22) cause = "METABOLIC"; // Low HCO3 (Base) causes Acidosis
+            else cause = "Mixed/Uncompensated";
+        }
+        // Alkalosis (High pH)
+        else if (ph > 7.45) {
+            if (co2 < 35) cause = "RESPIRATORY"; // Low CO2 causes Alkalosis
+            else if (hco3 > 26) cause = "METABOLIC"; // High HCO3 causes Alkalosis
+            else cause = "Mixed/Uncompensated";
+        }
+        // Normal pH
+        else {
+            if (co2 < 35 || co2 > 45 || hco3 < 22 || hco3 > 26) {
+                acidity = "COMPENSATED";
+                cause = "Metabolic/Respiratory";
+            } else {
+                acidity = "NORMAL";
+                cause = "Blood Gas";
+            }
+        }
+
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('diag').innerText = `${cause} ${acidity}`;
+        document.getElementById('reason').innerText = `pH: ${ph} | CO2: ${co2} | HCO3: ${hco3}`;
+    }
+</script>
+</body>
+</html>
