@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SageWire Tools – Dosage Calculator (Educational Use Only)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    /* ========= COLOR SYSTEM (AUTO LIGHT/DARK) ========= */
+    :root {
+      /* Light mode defaults */
+      --sw-bg: #f3f4f6;
+      --sw-card-bg: #ffffff;
+      --sw-text: #111827;
+      --sw-muted: #6b7280;
+      --sw-border: #e5e7eb;
+      --sw-button-bg: #111827;
+      --sw-button-text: #ffffff;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --sw-bg: #020617;
+        --sw-card-bg: #020617;
+        --sw-text: #e5e7eb;
+        --sw-muted: #9ca3af;
+        --sw-border: #1f2933;
+        --sw-button-bg: #e5e7eb;
+        --sw-button-text: #020617;
+      }
+    }
+
+    /* ========= GLOBAL LAYOUT ========= */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--sw-bg);
+      color: var(--sw-text);
+      margin: 0;
+      padding: 1.5rem;
+    }
+    .sw-page {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    /* ========= HEADER ========= */
+    .sw-header {
+      background: var(--sw-card-bg);
+      border-radius: 0.75rem;
+      border: 1px solid var(--sw-border);
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+    }
+    .sw-logo {
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+    .sw-tagline {
+      font-size: 0.85rem;
+      color: var(--sw-muted);
+    }
+
+    /* ========= TOOL CARD ========= */
+    .sw-tool-card {
+      background: var(--sw-card-bg);
+      border-radius: 0.75rem;
+      border: 1px solid var(--sw-border);
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 10px 15px rgba(15, 23, 42, 0.05);
+    }
+    h1 {
+      font-size: 1.5rem;
+      margin: 0 0 0.4rem 0;
+    }
+    .sw-desc {
+      font-size: 0.95rem;
+      color: var(--sw-muted);
+      margin-bottom: 0.8rem;
+    }
+    .sw-warning {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    /* ========= FORM ELEMENTS ========= */
+    label {
+      display: block;
+      margin-top: 0.9rem;
+      font-size: 0.9rem;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.45rem 0.55rem;
+      margin-top: 0.25rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--sw-border);
+      box-sizing: border-box;
+      font-size: 0.95rem;
+      background: var(--sw-bg);
+      color: var(--sw-text);
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--sw-button-bg);
+      box-shadow: 0 0 0 1px var(--sw-button-bg);
+    }
+
+    .sw-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 0.9rem;
+    }
+    .sw-row > div {
+      flex: 1;
+    }
+
+    button {
+      margin-top: 1.1rem;
+      padding: 0.6rem 1.1rem;
+      border-radius: 0.6rem;
+      border: none;
+      cursor: pointer;
+      background: var(--sw-button-bg);
+      color: var(--sw-button-text);
+      font-size: 0.95rem;
+    }
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .sw-result {
+      margin-top: 1rem;
+      font-weight: 600;
+    }
+    .sw-note {
+      margin-top: 0.4rem;
+      font-size: 0.9rem;
+      color: var(--sw-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="sw-page">
+    <!-- ===== SAGEWIRE HEADER ===== -->
+    <header class="sw-header">
+      <div class="sw-logo">SageWire Tools</div>
+      <div class="sw-tagline">We tend the fire while you're out living life.</div>
+    </header>
+
+    <!-- ===== TOOL CARD ===== -->
+    <section class="sw-tool-card">
+      <h1>Dosage Calculator (Educational Use Only)</h1>
+      <p class="sw-desc">
+        This tool does ONLY the math for weight-based dosing:
+        converts patient weight and an ordered dose in mg/kg into total mg and mL
+        based on a concentration (mg/mL).
+      </p>
+      <p class="sw-warning">
+        <strong>Safety warning:</strong>
+        This is NOT a medical device, NOT a prescribing tool,
+        and NOT a replacement for hospital calculators, protocols, pharmacy,
+        or clinical judgment. Always follow your institution’s procedures and
+        double-check every dose with approved tools.
+      </p>
+
+      <div class="sw-row">
+        <div>
+          <label>
+            Patient weight:
+            <input type="number" id="weight" placeholder="e.g. 70" step="0.1" min="0">
+          </label>
+        </div>
+        <div>
+          <label>
+            Weight unit:
+            <select id="weightUnit">
+              <option value="kg">kg</option>
+              <option value="lb">lb</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div class="sw-row">
+        <div>
+          <label>
+            Ordered dose (mg/kg):
+            <input type="number" id="doseMgPerKg" placeholder="e.g. 5" step="0.01" min="0">
+          </label>
+        </div>
+        <div>
+          <label>
+            Max dose (mg, optional – for comparison):
+            <input type="number" id="maxDoseMg" placeholder="e.g. 400" step="0.1" min="0">
+          </label>
+        </div>
+      </div>
+
+      <label>
+        Drug concentration (mg/mL):
+        <input type="number" id="concentration" placeholder="e.g. 10" step="0.01" min="0">
+      </label>
+
+      <button type="button" onclick="calculateDose()">
+        Calculate Dose
+      </button>
+
+      <div id="result" class="sw-result"></div>
+      <div id="note" class="sw-note"></div>
+    </section>
+  </div>
+
+  <script>
+    function calculateDose() {
+      const weight = parseFloat(document.getElementById('weight').value);
+      const weightUnit = document.getElementById('weightUnit').value;
+      const doseMgPerKg = parseFloat(document.getElementById('doseMgPerKg').value);
+      const conc = parseFloat(document.getElementById('concentration').value);
+      const maxDoseMg = parseFloat(document.getElementById('maxDoseMg').value);
+
+      const resultEl = document.getElementById('result');
+      const noteEl = document.getElementById('note');
+      resultEl.innerHTML = '';
+      noteEl.textContent = '';
+
+      if (isNaN(weight) || weight <= 0 ||
+          isNaN(doseMgPerKg) || doseMgPerKg <= 0 ||
+          isNaN(conc) || conc <= 0) {
+        resultEl.textContent = 'Please enter a valid weight, mg/kg dose, and concentration (mg/mL).';
+        return;
+      }
+
+      // Convert weight to kg if needed
+      let weightKg = weight;
+      if (weightUnit === 'lb') {
+        weightKg = weight / 2.20462;
+      }
+
+      // Total mg = kg * mg/kg
+      const totalMg = weightKg * doseMgPerKg;
+
+      // mL = mg / (mg/mL)
+      const totalMl = totalMg / conc;
+
+      if (!isFinite(totalMg) || totalMg <= 0 || !isFinite(totalMl) || totalMl <= 0) {
+        resultEl.textContent = 'Something went wrong with the calculation. Please check your inputs.';
+        return;
+      }
+
+      const weightKgR = weightKg.toFixed(2);
+      const totalMgR = totalMg.toFixed(2);
+      const totalMlR = totalMl.toFixed(2);
+
+      let html =
+        'Weight used for calculation: ' + weightKgR + ' kg<br>' +
+        'Total dose: ' + totalMgR + ' mg<br>' +
+        'Volume to administer: ' + totalMlR + ' mL ' +
+        '(@ ' + conc.toFixed(2) + ' mg/mL)';
+
+      // If max dose entered, compare
+      if (!isNaN(maxDoseMg) && maxDoseMg > 0) {
+        if (totalMg > maxDoseMg) {
+          html += '<br><br><strong>Alert:</strong> Calculated dose (' +
+                  totalMgR + ' mg) is ABOVE the max dose of ' +
+                  maxDoseMg.toFixed(2) + ' mg. Re-check orders and protocols immediately.';
+        } else {
+          html += '<br><br>Calculated dose is at or below the max dose of ' +
+                  maxDoseMg.toFixed(2) + ' mg (always still verify with approved tools).';
+        }
+      }
+
+      resultEl.innerHTML = html;
+
+      noteEl.textContent =
+        'Educational helper only. Always confirm ordered doses, weight, concentration, and calculations ' +
+        'with approved hospital/clinic systems, a second qualified person, and the official drug label.';
+    }
+  </script>
+</body>
+</html>
