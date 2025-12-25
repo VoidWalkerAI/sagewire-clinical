@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SageWire Burn</title>
+    <style>
+        body { background: #ffebee; font-family: sans-serif; padding: 20px; text-align: center; }
+        .header { background: #d32f2f; color: white; padding: 15px; font-weight: bold; border-radius: 8px; margin-bottom: 20px; }
+        .warning { font-size: 0.7rem; color: #555; margin-bottom: 20px; font-style: italic; }
+        input { width: 100%; padding: 15px; font-size: 1.1rem; border: 2px solid #ef5350; border-radius: 8px; margin-bottom: 15px; }
+        button { background: #d32f2f; color: white; border: none; padding: 15px; width: 100%; border-radius: 25px; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
+        
+        .result-group { text-align: left; background: white; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 5px solid #d32f2f; display: none; }
+        .res-label { font-size: 0.8rem; font-weight: bold; color: #777; text-transform: uppercase; }
+        .res-val { font-size: 1.5rem; font-weight: 900; color: #333; }
+        .res-sub { font-size: 0.9rem; color: #d32f2f; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="header">PARKLAND BURN CALC</div>
+    <div class="warning">⚠️ Uses standard 4mL formula. Verify with MD.</div>
+
+    <input type="number" id="weight" placeholder="Patient Weight (kg)">
+    <input type="number" id="tbsa" placeholder="Total Burn Area % (e.g. 20)">
+    
+    <button onclick="calcBurn()">CALCULATE FLUIDS</button>
+
+    <div class="result-group" id="resTotal">
+        <div class="res-label">Total 24hr Volume (Lactated Ringers)</div>
+        <div class="res-val" id="totalVol">-- mL</div>
+    </div>
+
+    <div class="result-group" id="res8">
+        <div class="res-label">First 8 Hours (50% of Total)</div>
+        <div class="res-val" id="vol8">-- mL</div>
+        <div class="res-sub">Rate: <span id="rate8">--</span> mL/hr</div>
+    </div>
+
+    <div class="result-group" id="res16">
+        <div class="res-label">Next 16 Hours (50% of Total)</div>
+        <div class="res-val" id="vol16">-- mL</div>
+        <div class="res-sub">Rate: <span id="rate16">--</span> mL/hr</div>
+    </div>
+
+<script>
+    function calcBurn() {
+        const kg = parseFloat(document.getElementById('weight').value);
+        const burn = parseFloat(document.getElementById('tbsa').value);
+
+        if(!kg || !burn) return;
+
+        // Formula: 4ml * kg * %burn
+        const total = 4 * kg * burn;
+        const half = total / 2;
+        
+        // Rates
+        const rateFirst = Math.round(half / 8);
+        const rateSecond = Math.round(half / 16);
+
+        document.getElementById('totalVol').innerText = total + " mL";
+        
+        document.getElementById('vol8').innerText = half + " mL";
+        document.getElementById('rate8').innerText = rateFirst;
+        
+        document.getElementById('vol16').innerText = half + " mL";
+        document.getElementById('rate16').innerText = rateSecond;
+
+        document.getElementById('resTotal').style.display = 'block';
+        document.getElementById('res8').style.display = 'block';
+        document.getElementById('res16').style.display = 'block';
+    }
+</script>
+</body>
+</html>
