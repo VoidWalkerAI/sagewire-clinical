@@ -3,62 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SageWire Shift</title>
+    <title>SageWire Shift Brain</title>
     <style>
-        body { background: #f5f5f5; font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
-        .header { background: #37474f; color: white; padding: 15px; font-weight: bold; border-radius: 8px; text-align: center; margin-bottom: 20px; }
+        body { background: #eceff1; font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; height: 95vh; }
+        
+        .header { background: #37474f; color: white; padding: 15px; font-weight: bold; border-radius: 8px; text-align: center; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .export-btn { background: #00897b; border: none; color: white; padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
+
         .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        input { padding: 12px; border: 1px solid #ccc; border-radius: 6px; }
-        #roomInput { width: 80px; }
+        input { padding: 15px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
+        #roomInput { width: 80px; text-align: center; }
         #taskInput { flex: 1; }
-        button#addBtn { background: #263238; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; }
-        ul { list-style: none; padding: 0; }
-        li { background: white; border-bottom: 1px solid #eee; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        li.done { opacity: 0.5; text-decoration: line-through; }
-        .room-badge { background: #cfd8dc; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; margin-right: 10px; }
-        .delete-btn { color: #e53935; font-weight: bold; margin-left: 15px; cursor: pointer; }
+        button#addBtn { background: #37474f; color: white; border: none; padding: 0 20px; border-radius: 6px; font-weight: bold; font-size: 1.5rem; cursor: pointer; }
+
+        /* The List */
+        ul { list-style: none; padding: 0; flex: 1; overflow-y: auto; margin: 0; }
+        li { background: white; border-bottom: 1px solid #eee; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #cfd8dc; margin-bottom: 5px; border-radius: 4px; transition: 0.2s; }
+        
+        /* Done State */
+        li.done { opacity: 0.6; background: #f5f5f5; border-left-color: #4caf50; }
+        li.done .task-text { text-decoration: line-through; color: #777; }
+        
+        .task-content { display: flex; flex-direction: column; width: 100%; cursor: pointer; }
+        .room-badge { font-weight: 900; color: #37474f; font-size: 0.9rem; margin-bottom: 4px; }
+        .time-stamp { font-size: 0.7rem; color: #90a4ae; margin-top: 4px; }
+        
+        .delete-btn { color: #e53935; font-weight: bold; padding: 10px; cursor: pointer; font-size: 1.2rem; margin-left: 10px; }
+
+        .footer-controls { margin-top: 20px; text-align: center; }
+        .clear-btn { background: transparent; color: #e53935; border: 1px solid #e53935; padding: 10px 30px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
-    <div class="header">SHIFT BRAIN</div>
+    <div class="header">
+        <span>SHIFT BRAIN</span>
+        <button class="export-btn" onclick="exportCSV()">💾 SAVE CSV</button>
+    </div>
 
     <div class="input-group">
-        <input type="text" id="roomInput" placeholder="Room #">
+        <input type="text" id="roomInput" placeholder="Rm #">
         <input type="text" id="taskInput" placeholder="Task (e.g. Meds)">
         <button id="addBtn" onclick="addTask()">+</button>
     </div>
 
     <ul id="taskList"></ul>
     
-    <div style="text-align:center; margin-top:30px;">
-        <button onclick="clearAll()" style="background:transparent; color:#e53935; border:1px solid #e53935; padding:10px 20px; border-radius:20px;">Clear Shift</button>
+    <div class="footer-controls">
+        <button class="clear-btn" onclick="clearAll()">Start New Shift (Clear)</button>
     </div>
 
 <script>
-    function addTask() {
-        const room = document.getElementById('roomInput').value;
-        const task = document.getElementById('taskInput').value;
-        if(!task) return;
+    // 1. Load Data on Startup
+    let tasks = JSON.parse(localStorage.getItem('sage_tasks')) || [];
+    renderTasks();
 
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <div onclick="this.parentElement.classList.toggle('done')">
-                <span class="room-badge">${room || 'Gen'}</span>
-                <span>${task}</span>
-            </div>
-            <span class="delete-btn" onclick="this.parentElement.remove()">✕</span>
-        `;
-        document.getElementById('taskList').appendChild(li);
+    function addTask() {
+        const room = document.getElementById('roomInput').value.trim();
+        const taskText = document.getElementById('taskInput').value.trim();
+        if(!taskText) return;
+
+        const newTask = {
+            id: Date.now(),
+            room: room || 'Gen',
+            text: taskText,
+            created: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+            done: false,
+            completedAt: ''
+        };
+
+        tasks.push(newTask);
+        saveAndRender();
         
         document.getElementById('roomInput').value = '';
         document.getElementById('taskInput').value = '';
+        document.getElementById('roomInput').focus();
+    }
+
+    function toggleTask(id) {
+        const task = tasks.find(t => t.id === id);
+        task.done = !task.done;
+        // Timestamp when finished
+        if(task.done) {
+            task.completedAt = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        } else {
+            task.completedAt = '';
+        }
+        saveAndRender();
+    }
+
+    function deleteTask(id, e) {
+        e.stopPropagation(); // Stop click from toggling "done"
+        tasks = tasks.filter(t => t.id !== id);
+        saveAndRender();
+    }
+
+    function saveAndRender() {
+        localStorage.setItem('sage_tasks', JSON.stringify(tasks));
+        renderTasks();
+    }
+
+    function renderTasks() {
+        const list = document.getElementById('taskList');
+        list.innerHTML = '';
+        
+        // Sort: Not Done first, then Done
+        tasks.sort((a, b) => a.done - b.done);
+
+        tasks.forEach(task => {
+            const li = document.createElement('li');
+            if(task.done) li.classList.add('done');
+            
+            li.innerHTML = `
+                <div class="task-content" onclick="toggleTask(${task.id})">
+                    <span class="room-badge">RM ${task.room}</span>
+                    <span class="task-text">${task.text}</span>
+                    <span class="time-stamp">
+                        Created: ${task.created} 
+                        ${task.done ? ' | ✅ Done: ' + task.completedAt : ''}
+                    </span>
+                </div>
+                <div class="delete-btn" onclick="deleteTask(${task.id}, event)">✕</div>
+            `;
+            list.appendChild(li);
+        });
     }
 
     function clearAll() {
-        if(confirm("End shift? This deletes all tasks.")) {
-            document.getElementById('taskList').innerHTML = '';
+        if(confirm("End Shift? This will wipe the list. (Download CSV first!)")) {
+            tasks = [];
+            saveAndRender();
         }
+    }
+
+    // --- THE EXPORT ENGINE (The Receipt) ---
+    function exportCSV() {
+        if(tasks.length === 0) { alert("List is empty!"); return; }
+
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Room,Task,Created Time,Status,Completed Time\n"; // Header
+
+        tasks.forEach(t => {
+            const status = t.done ? "COMPLETED" : "PENDING";
+            // Escape commas in task text so it doesn't break CSV
+            const safeText = t.text.replace(/,/g, " "); 
+            const row = `${t.room},${safeText},${t.created},${status},${t.completedAt}`;
+            csvContent += row + "\n";
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        const dateStr = new Date().toLocaleDateString().replace(/\//g, "-");
+        link.setAttribute("download", `SageWire_Report_${dateStr}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 </script>
 </body>
