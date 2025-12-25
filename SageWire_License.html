@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SageWire License</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #e3f2fd; max-width: 600px; margin: 0 auto; }
+        .header { background: #1565c0; color: white; padding: 15px; text-align: center; border-radius: 8px; font-weight: bold; margin-bottom: 20px; }
+        
+        .add-box { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 5px; flex-wrap: wrap; }
+        input { padding: 10px; border: 1px solid #ccc; border-radius: 4px; flex: 1; }
+        button#add { background: #1565c0; color: white; border: none; padding: 10px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+
+        .card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 6px solid #ccc; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .card-title { font-weight: bold; font-size: 1.1em; color: #333; }
+        .card-sub { font-size: 0.85em; color: #666; margin-top: 4px; }
+        .days-left { font-weight: 900; font-size: 1.2em; text-align: right; }
+        
+        .good { border-left-color: #2e7d32; }
+        .warn { border-left-color: #f9a825; }
+        .bad { border-left-color: #c62828; }
+        
+        .del-btn { color: #c62828; font-size: 1.2em; margin-left: 15px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="header">CREDENTIAL TRACKER</div>
+
+    <div class="add-box">
+        <input type="text" id="lcName" placeholder="Name (e.g. RN License, BLS)">
+        <input type="date" id="lcDate">
+        <button id="add" onclick="addLc()">+</button>
+    </div>
+
+    <div id="list"></div>
+
+<script>
+    let list = JSON.parse(localStorage.getItem('sage_licenses')) || [];
+    render();
+
+    function addLc() {
+        const name = document.getElementById('lcName').value;
+        const date = document.getElementById('lcDate').value;
+        if(!name || !date) return;
+        
+        list.push({ id: Date.now(), name, date });
+        save();
+        document.getElementById('lcName').value = '';
+    }
+
+    function deleteLc(id) {
+        list = list.filter(i => i.id !== id);
+        save();
+    }
+
+    function save() {
+        localStorage.setItem('sage_licenses', JSON.stringify(list));
+        render();
+    }
+
+    function render() {
+        const cont = document.getElementById('list');
+        cont.innerHTML = '';
+        
+        list.sort((a,b) => new Date(a.date) - new Date(b.date)); // Sort by soonest expiry
+
+        list.forEach(item => {
+            const exp = new Date(item.date);
+            const now = new Date();
+            const diffTime = exp - now;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+            
+            let statusClass = 'good';
+            let statusText = `${diffDays} Days`;
+            
+            if(diffDays < 0) { statusClass = 'bad'; statusText = "EXPIRED"; }
+            else if(diffDays < 30) { statusClass = 'bad'; }
+            else if(diffDays < 90) { statusClass = 'warn'; }
+
+            const div = document.createElement('div');
+            div.className = `card ${statusClass}`;
+            div.innerHTML = `
+                <div>
+                    <div class="card-title">${item.name}</div>
+                    <div class="card-sub">Exp: ${item.date}</div>
+                </div>
+                <div style="display:flex; align-items:center;">
+                    <div class="days-left" style="color:${statusClass === 'bad' ? '#c62828' : '#333'}">${statusText}</div>
+                    <div class="del-btn" onclick="deleteLc(${item.id})">✕</div>
+                </div>
+            `;
+            cont.appendChild(div);
+        });
+    }
+</script>
+</body>
+</html>
