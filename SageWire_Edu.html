@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SageWire Edu</title>
+    <style>
+        body { background: #e0f7fa; font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+        .header { background: #006064; color: white; padding: 15px; font-weight: bold; border-radius: 8px; text-align: center; margin-bottom: 20px; }
+        textarea { width: 100%; height: 150px; padding: 15px; border: 2px solid #ccc; border-radius: 8px; font-family: sans-serif; font-size: 1rem; }
+        .status-bar { margin-top: 15px; padding: 15px; border-radius: 8px; text-align: center; font-weight: bold; display: none; }
+        .good { background: #c8e6c9; color: #2e7d32; border: 1px solid #2e7d32; }
+        .bad { background: #ffcdd2; color: #c62828; border: 1px solid #c62828; }
+    </style>
+</head>
+<body>
+
+    <div class="header">PATIENT TEACHING CHECKER</div>
+    <p style="font-size:0.9rem; color:#555;">Paste your instructions below. Aim for <strong>6th Grade</strong> level.</p>
+
+    <textarea id="textInput" placeholder="Type here... e.g., 'Take this pill twice a day with food.'"></textarea>
+    <button onclick="checkReadability()" style="width:100%; padding:15px; background:#0097a7; color:white; border:none; border-radius:8px; font-size:1rem; margin-top:10px; cursor:pointer;">Analyze Text</button>
+
+    <div id="result" class="status-bar"></div>
+
+<script>
+    function checkReadability() {
+        const text = document.getElementById('textInput').value;
+        if(!text) return;
+        
+        const words = text.split(/\s+/).length;
+        const sentences = text.split(/[.!?]+/).length - 1 || 1;
+        const syllables = countSyllables(text);
+        
+        // Flesch-Kincaid Grade Level Formula
+        const score = 0.39 * (words / sentences) + 11.8 * (syllables / words) - 15.59;
+        const grade = Math.max(0, Math.round(score));
+
+        const resDiv = document.getElementById('result');
+        resDiv.style.display = 'block';
+        
+        if(grade <= 6) {
+            resDiv.className = 'status-bar good';
+            resDiv.innerHTML = `✅ GRADE LEVEL: ${grade} (Perfect for Patients)`;
+        } else {
+            resDiv.className = 'status-bar bad';
+            resDiv.innerHTML = `⚠️ GRADE LEVEL: ${grade} (Too Complex)<br><span style='font-size:0.8rem; font-weight:normal'>Try shorter words and sentences.</span>`;
+        }
+    }
+
+    function countSyllables(str) {
+        // Rough estimator
+        str = str.toLowerCase();
+        if(str.length <= 3) return 1;
+        str = str.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, '');
+        str = str.replace(/^y/, '');
+        return str.match(/[aeiouy]{1,2}/g).length;
+    }
+</script>
+</body>
+</html>
