@@ -17,7 +17,8 @@
             --cardio: #00897b; --resp: #0277bd; --neuro: #673ab7;
             --gi: #2e7d32; --ortho: #455a64; --skin: #e53935;
             --pharma: #8e24aa; --fluids: #00acc1; --tools: #37474f;
-            --crit: #bf360c; /* Burnt Orange for Critical Care */
+            --crit: #bf360c; 
+            --ref: #fbc02d; /* Gold for Reference/Study Tools */
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -32,90 +33,4 @@
             background: white; padding: 40px 20px 20px 20px; text-align: center;
             border-bottom: 1px solid #eee;
         }
-        .hero h1 { margin: 0; font-size: 1.8rem; font-weight: 900; color: #1a237e; }
-        .hero p { margin: 5px 0 0 0; color: var(--col-sub); font-size: 0.9rem; }
-        .disclaimer { font-size: 0.65rem; color: #e53935; margin-top: 10px; font-weight: bold; background: #ffebee; display: inline-block; padding: 4px 10px; border-radius: 10px; }
-
-        .grid-container {
-            flex: 1; padding: 15px; display: grid; grid-template-columns: 1fr 1fr 1fr; /* 3 Columns now */
-            gap: 10px; max-width: 800px; margin: 0 auto; width: 100%;
-        }
-
-        .section-label {
-            grid-column: 1 / -1; font-size: 0.75rem; font-weight: 800; color: #90a4ae;
-            text-transform: uppercase; letter-spacing: 1px; margin-top: 25px; margin-bottom: 5px;
-            border-bottom: 1px solid #cfd8dc; padding-bottom: 2px;
-        }
-
-        .dept-btn {
-            background: white; border: none; border-radius: 8px; padding: 10px;
-            text-align: center; text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 90px; position: relative; overflow: hidden;
-        }
-        .dept-btn::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; }
-        .dept-icon { font-size: 1.5rem; margin-bottom: 5px; }
-        .dept-name { font-weight: 800; font-size: 0.75rem; color: var(--col-text); text-transform: uppercase; }
-
-        /* Colors */
-        .btn-cardio::before { background: var(--cardio); } .btn-cardio .dept-icon { color: var(--cardio); }
-        .btn-resp::before { background: var(--resp); } .btn-resp .dept-icon { color: var(--resp); }
-        .btn-neuro::before { background: var(--neuro); } .btn-neuro .dept-icon { color: var(--neuro); }
-        .btn-gi::before { background: var(--gi); } .btn-gi .dept-icon { color: var(--gi); }
-        .btn-ortho::before { background: var(--ortho); } .btn-ortho .dept-icon { color: var(--ortho); }
-        .btn-skin::before { background: var(--skin); } .btn-skin .dept-icon { color: var(--skin); }
-        
-        .btn-pharma::before { background: var(--pharma); } .btn-pharma .dept-icon { color: var(--pharma); }
-        .btn-fluids::before { background: var(--fluids); } .btn-fluids .dept-icon { color: var(--fluids); }
-        
-        .btn-tool::before { background: var(--tools); } .btn-tool .dept-icon { color: var(--tools); }
-        .btn-crit::before { background: var(--crit); } .btn-crit .dept-icon { color: var(--crit); }
-
-        .footer { text-align: center; padding: 30px; color: #b0bec5; font-size: 0.7rem; }
-    </style>
-</head>
-<body>
-
-    <div class="hero">
-        <h1>SAGEWIRE CLINICAL</h1>
-        <p>Ember Wake Medical Corps</p>
-        <div class="disclaimer">⚠️ EDUCATIONAL USE ONLY</div>
-    </div>
-
-    <div class="grid-container">
-        
-        <div class="section-label">Translations</div>
-        <a href="SageWire_Cardio.html" class="dept-btn btn-cardio"><div class="dept-icon">🫀</div><div class="dept-name">Cardio</div></a>
-        <a href="SageWire_Resp.html" class="dept-btn btn-resp"><div class="dept-icon">🫁</div><div class="dept-name">Resp</div></a>
-        <a href="SageWire_Neuro.html" class="dept-btn btn-neuro"><div class="dept-icon">🧠</div><div class="dept-name">Neuro</div></a>
-        <a href="SageWire_GI.html" class="dept-btn btn-gi"><div class="dept-icon">🥨</div><div class="dept-name">G.I.</div></a>
-        <a href="SageWire_Ortho.html" class="dept-btn btn-ortho"><div class="dept-icon">🦴</div><div class="dept-name">Ortho</div></a>
-        <a href="SageWire_Skin.html" class="dept-btn btn-skin"><div class="dept-icon">🛡️</div><div class="dept-name">Skin</div></a>
-
-        <div class="section-label">Calculators</div>
-        <a href="SageWire_Pharma.html" class="dept-btn btn-pharma"><div class="dept-icon">💊</div><div class="dept-name">Dose</div></a>
-        <a href="SageWire_Fluids.html" class="dept-btn btn-fluids"><div class="dept-icon">💧</div><div class="dept-name">Drips</div></a>
-        <a href="SageWire_OB.html" class="dept-btn btn-pharma"><div class="dept-icon">👶</div><div class="dept-name">O.B.</div></a>
-
-        <div class="section-label">Critical Care</div>
-        <a href="SageWire_GCS.html" class="dept-btn btn-crit"><div class="dept-icon">👁️</div><div class="dept-name">GCS (Coma)</div></a>
-        <a href="SageWire_MAP.html" class="dept-btn btn-crit"><div class="dept-icon">❤️</div><div class="dept-name">MAP (BP)</div></a>
-        <a href="SageWire_O2.html" class="dept-btn btn-crit"><div class="dept-icon">⏱️</div><div class="dept-name">O2 Tank</div></a>
-        <a href="SageWire_ABG.html" class="dept-btn btn-crit"><div class="dept-icon">🧪</div><div class="dept-name">ABG Code</div></a>
-        <a href="SageWire_Peds.html" class="dept-btn btn-crit"><div class="dept-icon">🧸</div><div class="dept-name">Peds</div></a>
-        <a href="SageWire_Burn.html" class="dept-btn btn-crit"><div class="dept-icon">🔥</div><div class="dept-name">Burn Calc</div></a>
-
-        <div class="section-label">Shift Tools</div>
-        <a href="SageWire_CPR.html" class="dept-btn btn-skin"><div class="dept-icon">⚡</div><div class="dept-name">CPR</div></a>
-        <a href="SageWire_Shift.html" class="dept-btn btn-tool"><div class="dept-icon">📋</div><div class="dept-name">Brain</div></a>
-        <a href="SageWire_Edu.html" class="dept-btn btn-fluids"><div class="dept-icon">🎓</div><div class="dept-name">Teach</div></a>
-
-    </div>
-
-    <div class="footer">
-        SageWire v3.0 | Ember Wake Corp<br>
-        Forged for the Modern Nurse
-    </div>
-
-</body>
-</html>
+        .hero h1 { margin: 0; font-size: 1.8rem
