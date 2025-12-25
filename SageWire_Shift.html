@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SageWire Shift</title>
+    <style>
+        body { background: #f5f5f5; font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+        .header { background: #37474f; color: white; padding: 15px; font-weight: bold; border-radius: 8px; text-align: center; margin-bottom: 20px; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { padding: 12px; border: 1px solid #ccc; border-radius: 6px; }
+        #roomInput { width: 80px; }
+        #taskInput { flex: 1; }
+        button#addBtn { background: #263238; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; }
+        ul { list-style: none; padding: 0; }
+        li { background: white; border-bottom: 1px solid #eee; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        li.done { opacity: 0.5; text-decoration: line-through; }
+        .room-badge { background: #cfd8dc; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; margin-right: 10px; }
+        .delete-btn { color: #e53935; font-weight: bold; margin-left: 15px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="header">SHIFT BRAIN</div>
+
+    <div class="input-group">
+        <input type="text" id="roomInput" placeholder="Room #">
+        <input type="text" id="taskInput" placeholder="Task (e.g. Meds)">
+        <button id="addBtn" onclick="addTask()">+</button>
+    </div>
+
+    <ul id="taskList"></ul>
+    
+    <div style="text-align:center; margin-top:30px;">
+        <button onclick="clearAll()" style="background:transparent; color:#e53935; border:1px solid #e53935; padding:10px 20px; border-radius:20px;">Clear Shift</button>
+    </div>
+
+<script>
+    function addTask() {
+        const room = document.getElementById('roomInput').value;
+        const task = document.getElementById('taskInput').value;
+        if(!task) return;
+
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <div onclick="this.parentElement.classList.toggle('done')">
+                <span class="room-badge">${room || 'Gen'}</span>
+                <span>${task}</span>
+            </div>
+            <span class="delete-btn" onclick="this.parentElement.remove()">✕</span>
+        `;
+        document.getElementById('taskList').appendChild(li);
+        
+        document.getElementById('roomInput').value = '';
+        document.getElementById('taskInput').value = '';
+    }
+
+    function clearAll() {
+        if(confirm("End shift? This deletes all tasks.")) {
+            document.getElementById('taskList').innerHTML = '';
+        }
+    }
+</script>
+</body>
+</html>
