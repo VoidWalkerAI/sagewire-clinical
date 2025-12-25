@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SageWire Clinical | Ortho</title>
+    <title>SageWire Clinical | Skin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            /* SLATE GREY PALETTE (X-RAY) */
-            --col-scrub: #455a64; /* Blue Grey */
-            --col-scrub-dark: #263238;
+            /* TISSUE RED PALETTE */
+            --col-scrub: #e53935; /* Red 600 */
+            --col-scrub-dark: #c62828;
             --col-white: #ffffff;
-            --col-bg: #eceff1; /* Very Light Grey */
-            --col-text: #212121;
-            --col-sub: #546e7a;
-            --col-accent: #d84315; /* Burnt Orange (Construction feel) */
-            --col-active: #cfd8dc; /* Active Playing Color */
+            --col-bg: #ffebee; /* Very Light Red BG */
+            --col-text: #3e2723; /* Dark Brown Text (Warmer than black) */
+            --col-sub: #5d4037;
+            --col-accent: #009688; /* Teal (Complementary to Red) for scripts */
+            --col-active: #ffcdd2; /* Active Playing Color */
             
             --shadow-card: 0 2px 8px rgba(0,0,0,0.08);
             --font-main: 'Inter', sans-serif;
@@ -68,7 +68,7 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             outline: none;
         }
-        .search-input::placeholder { color: #b0bec5; }
+        .search-input::placeholder { color: #ef9a9a; }
 
         /* --- LIST --- */
         .card-list {
@@ -94,7 +94,7 @@
         }
         .med-card.playing {
             border-left-color: var(--col-scrub);
-            background: #cfd8dc;
+            background: #ffebee;
         }
 
         /* CARD HEADER */
@@ -121,16 +121,16 @@
         .med-card.expanded .card-body { display: block; }
 
         .script-box {
-            background: #fbe9e7; /* Pale Burnt Orange */
+            background: #e0f2f1; /* Pale Teal */
             border-left: 4px solid var(--col-accent);
             padding: 12px;
             margin-top: 10px;
             border-radius: 0 4px 4px 0;
             font-size: 0.95rem; line-height: 1.5;
-            color: #3e2723;
+            color: #004d40;
         }
         .script-label {
-            font-size: 0.7rem; font-weight: 800; color: #d84315;
+            font-size: 0.7rem; font-weight: 800; color: #009688;
             text-transform: uppercase; margin-bottom: 4px; display: block;
         }
 
@@ -166,9 +166,9 @@
             to { opacity: 1; transform: translateY(0); }
         }
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(69, 90, 100, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(69, 90, 100, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(69, 90, 100, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(229, 57, 53, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0); }
         }
 
     </style>
@@ -177,14 +177,14 @@
 
     <div class="header">
         <div class="brand">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 10c.7-.7 1.69 0 2.5 0a2.5 2.5 0 1 0 0-5 .5.5 0 0 1-.5-.5 2.5 2.5 0 1 0-5 0c0 .81.7 1.8 0 2.5l-7 7c-.7.7-1.69 0-2.5 0a2.5 2.5 0 0 0 0 5c.28 0 .5.22.5.5a2.5 2.5 0 1 0 5 0c0-.81-.7-1.8 0-2.5Z"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             SAGEWIRE CLINICAL
         </div>
-        <span class="dept-badge">ORTHO</span>
+        <span class="dept-badge">SKIN</span>
     </div>
 
     <div class="search-container">
-        <input type="text" class="search-input" id="searchBar" placeholder="Search bones..." onkeyup="filterList()">
+        <input type="text" class="search-input" id="searchBar" placeholder="Search wounds..." onkeyup="filterList()">
     </div>
 
     <div class="card-list" id="cardContainer"></div>
@@ -197,67 +197,67 @@
     </div>
 
 <script>
-    /* --- THE DATABASE (ORTHO) --- */
+    /* --- THE DATABASE (SKIN) --- */
     const dictionary = [
         {
-            term: "Osteoporosis",
-            trans: "Brittle Beams",
-            script: "Think of healthy bone like strong oak wood. Osteoporosis is like termites getting into that wood; it makes the inside look like swiss cheese, so the beam is weak and can break easily."
+            term: "Pressure Ulcer",
+            trans: "Pothole",
+            script: "Think of a pothole in a road. Because you've been lying in one spot, the pressure eroded the top layer of skin just like traffic erodes asphalt. We need to take the weight off so the crew can fill the hole."
         },
         {
-            term: "Osteoarthritis",
-            trans: "Rusty Hinge",
-            script: "Your joints normally have a smooth cushion so they glide. That cushion has worn away, so now it is like a rusty door hinge grinding bone-on-bone, which is why it hurts to move."
+            term: "Cellulitis",
+            trans: "Underground Fire",
+            script: "You have a scratch on the surface, but the bacteria got underneath the skin and started a fire in the deeper layers. That red, hot spreading area is the heat from the fire spreading underground."
         },
         {
-            term: "Herniated Disc",
-            trans: "Jelly Donut",
-            script: "The discs in your spine are like shock absorbers, imagine a jelly donut. You squished the donut too hard, and the jelly inside leaked out and is pinching a nerve nearby."
+            term: "Abscess",
+            trans: "Walled-Off Trash",
+            script: "Your body found an infection it couldn't kill immediately, so it built a wall around it to trap it, like bagging up trash. That bump is the bag full of fluid that we need to drain."
         },
         {
-            term: "Fracture",
-            trans: "Cracked Beam",
-            script: "The structural beam of your leg has a crack in it. We need to cast it, which is basically pouring cement around it, to hold it perfectly still so the body can weld that crack back together."
+            term: "Dehiscence",
+            trans: "Popped Zipper",
+            script: "The surgical wound is like a zipper on a tight jacket. You moved a little too fast or coughed too hard, and the zipper popped open in the middle. We need to help hold it together so it can re-seal."
         },
         {
-            term: "Ligament Tear (ACL)",
-            trans: "Snapped Rubber Band",
-            script: "Your ligaments are strong rubber bands that hold your knee steady. You stretched one too far and it snapped. The knee is wobbly now because that stabilizing band is broken."
+            term: "Necrosis",
+            trans: "Dead Leaf",
+            script: "This black tissue is like a dead leaf on a plant. It’s not coming back to life, and it might make the healthy parts sick, so we need to trim it away so the green healthy skin can grow."
         },
         {
-            term: "Compartment Syndrome",
-            trans: "Tight Suitcase",
-            script: "Your muscles are packed inside a tight wrapper. Due to swelling, it is like trying to zip shut an overpacked suitcase. The pressure inside is so high it is crushing the nerves and blood vessels."
+            term: "Psoriasis",
+            trans: "Leaky Brick Wall",
+            script: "Healthy skin is like a strong brick wall that keeps moisture in and germs out. Your wall has some crumbly mortar, so moisture leaks out, causing dryness, and irritants get in, causing itching."
         },
         {
-            term: "Gout",
-            trans: "The Angry Toe",
-            script: "It feels like you stubbed your toe, but the coffee table was made of lava. Crystals have formed in the joint, acting like tiny shards of broken glass. We need to wash those crystals out."
+            term: "Keloid",
+            trans: "Overzealous Cement",
+            script: "Your body's repair crew got a little too excited. They kept piling on cement, or collagen, even after the hole was filled, which is why that scar is raised and thick."
         },
         {
-            term: "Sciatica",
-            trans: "The Zapping Wire",
-            script: "There is a massive nerve running down your leg that is currently being pinched at the source. It is like stepping on a live wire; the problem is in your back, but your leg is taking the punishment."
+            term: "Hematoma",
+            trans: "Internal Pool",
+            script: "A blood vessel broke under the surface, but the skin didn't break. It's like a balloon filling with water under a rug. The blood is pooling there and needs time to reabsorb."
         },
         {
-            term: "Rheumatoid Arthritis",
-            trans: "Friendly Fire",
-            script: "Your immune system is usually your bodyguard, but right now it is confused. It is attacking your own joints by mistake, causing them to get hot, swollen, and stiff."
+            term: "Urticaria (Hives)",
+            trans: "False Alarm",
+            script: "Your immune system pulled the fire alarm by mistake. It released chemicals that caused these red, itchy welts, even though there is no real fire."
         },
         {
-            term: "Scoliosis",
-            trans: "Curved Pillar",
-            script: "Your spine should be a straight pillar. Right now, it is curving to the side like the letter S. This throws off your foundation and can make your shoulders or hips look uneven."
+            term: "Jaundice",
+            trans: "The Yellow Filter",
+            script: "A waste product is building up in your blood because the liver isn't filtering it. It acts like a yellow highlighter, tinting your skin and eyes."
         },
         {
-            term: "Carpal Tunnel",
-            trans: "Pinched Cable",
-            script: "The tunnel in your wrist is too crowded. The nerve is getting squeezed like a cable caught in a door jamb. We need to open the door to let it breathe."
+            term: "Purulent Drainage",
+            trans: "Liquid Debris",
+            script: "This fluid is basically the battlefield aftermath. It is a mix of dead bacteria and white blood cells that your body is pushing out of the wound to clean it."
         },
         {
-            term: "Plantar Fasciitis",
-            trans: "Tight Bowstring",
-            script: "There is a thick band on the bottom of your foot that acts like a bowstring. It is pulled way too tight, so every time you take a step, it pulls on your heel bone and causes that sharp pain."
+            term: "Cyanosis",
+            trans: "Blue Tint",
+            script: "Your blood is like paint. When it has oxygen, it is bright red. Right now, the mix is low on oxygen, so the color is turning more blue or purple, which we see in your lips."
         }
     ];
 
