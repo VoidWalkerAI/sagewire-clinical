@@ -8,17 +8,15 @@
     
     <style>
         :root {
-            --col-bg: #f5f7fa;
-            --col-text: #263238;
-            --col-sub: #546e7a;
+            --col-bg: #f5f7fa; --col-text: #263238; --col-sub: #546e7a;
             --font-main: 'Inter', sans-serif;
-
-            /* DEPT COLORS */
+            
+            /* COLORS */
             --cardio: #00897b; --resp: #0277bd; --neuro: #673ab7;
             --gi: #2e7d32; --ortho: #455a64; --skin: #e53935;
             --pharma: #8e24aa; --fluids: #00acc1; --tools: #37474f;
-            --crit: #bf360c; 
-            --ref: #fbc02d; /* Gold for Reference/Study Tools */
+            --crit: #bf360c; --ref: #fbc02d; 
+            --travel: #2e7d32; /* Green for Money/Travel */
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -38,7 +36,7 @@
         .disclaimer { font-size: 0.65rem; color: #e53935; margin-top: 10px; font-weight: bold; background: #ffebee; display: inline-block; padding: 4px 10px; border-radius: 10px; }
 
         .grid-container {
-            flex: 1; padding: 15px; display: grid; grid-template-columns: 1fr 1fr 1fr; /* 3 Columns */
+            flex: 1; padding: 15px; display: grid; grid-template-columns: 1fr 1fr 1fr; 
             gap: 10px; max-width: 800px; margin: 0 auto; width: 100%;
         }
 
@@ -58,20 +56,19 @@
         .dept-icon { font-size: 1.6rem; margin-bottom: 5px; }
         .dept-name { font-weight: 800; font-size: 0.7rem; color: var(--col-text); text-transform: uppercase; }
 
-        /* Button Color assignments */
+        /* Colors */
         .btn-cardio::before { background: var(--cardio); } .btn-cardio .dept-icon { color: var(--cardio); }
         .btn-resp::before { background: var(--resp); } .btn-resp .dept-icon { color: var(--resp); }
         .btn-neuro::before { background: var(--neuro); } .btn-neuro .dept-icon { color: var(--neuro); }
         .btn-gi::before { background: var(--gi); } .btn-gi .dept-icon { color: var(--gi); }
         .btn-ortho::before { background: var(--ortho); } .btn-ortho .dept-icon { color: var(--ortho); }
         .btn-skin::before { background: var(--skin); } .btn-skin .dept-icon { color: var(--skin); }
-        
         .btn-pharma::before { background: var(--pharma); } .btn-pharma .dept-icon { color: var(--pharma); }
         .btn-fluids::before { background: var(--fluids); } .btn-fluids .dept-icon { color: var(--fluids); }
-        
         .btn-tool::before { background: var(--tools); } .btn-tool .dept-icon { color: var(--tools); }
         .btn-crit::before { background: var(--crit); } .btn-crit .dept-icon { color: var(--crit); }
         .btn-ref::before { background: var(--ref); } .btn-ref .dept-icon { color: var(--ref); }
+        .btn-travel::before { background: var(--travel); } .btn-travel .dept-icon { color: var(--travel); }
 
         .footer { text-align: center; padding: 40px; color: #b0bec5; font-size: 0.7rem; }
     </style>
@@ -107,20 +104,24 @@
         <a href="SageWire_Peds.html" class="dept-btn btn-crit"><div class="dept-icon">🧸</div><div class="dept-name">Peds</div></a>
         <a href="SageWire_Burn.html" class="dept-btn btn-crit"><div class="dept-icon">🔥</div><div class="dept-name">Burn Calc</div></a>
 
-        <div class="section-label">Reference Decks</div>
-        <a href="SageWire_Labs.html" class="dept-btn btn-ref"><div class="dept-icon">📉</div><div class="dept-name">Lab Fish</div></a>
-        <a href="SageWire_EKG.html" class="dept-btn btn-ref"><div class="dept-icon">⚡</div><div class="dept-name">EKG ID</div></a>
-        <a href="SageWire_Prefix.html" class="dept-btn btn-ref"><div class="dept-icon">📖</div><div class="dept-name">Rx Prefix</div></a>
-
         <div class="section-label">Shift Tools</div>
         <a href="SageWire_CPR.html" class="dept-btn btn-skin"><div class="dept-icon">🛑</div><div class="dept-name">CPR</div></a>
         <a href="SageWire_Shift.html" class="dept-btn btn-tool"><div class="dept-icon">📋</div><div class="dept-name">Brain</div></a>
         <a href="SageWire_Edu.html" class="dept-btn btn-fluids"><div class="dept-icon">🎓</div><div class="dept-name">Teach</div></a>
 
+        <div class="section-label">Reference Decks</div>
+        <a href="SageWire_Labs.html" class="dept-btn btn-ref"><div class="dept-icon">📉</div><div class="dept-name">Lab Fish</div></a>
+        <a href="SageWire_EKG.html" class="dept-btn btn-ref"><div class="dept-icon">⚡</div><div class="dept-name">EKG ID</div></a>
+        <a href="SageWire_Prefix.html" class="dept-btn btn-ref"><div class="dept-icon">📖</div><div class="dept-name">Rx Prefix</div></a>
+        
+        <div class="section-label">Mobile / Travel</div>
+        <a href="SageWire_Time.html" class="dept-btn btn-travel"><div class="dept-icon">🚗</div><div class="dept-name">Time & Mile</div></a>
+        <a href="SageWire_License.html" class="dept-btn btn-travel"><div class="dept-icon">🪪</div><div class="dept-name">Licenses</div></a>
+
     </div>
 
     <div class="footer">
-        SageWire v4.0 | Ember Wake Corp<br>
+        SageWire v5.0 | Ember Wake Corp<br>
         Forged for the Modern Nurse
     </div>
 
