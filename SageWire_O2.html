@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SageWire O2</title>
+    <style>
+        body { background: #e3f2fd; font-family: sans-serif; padding: 20px; text-align: center; }
+        .header { background: #0277bd; color: white; padding: 15px; font-weight: bold; border-radius: 8px; margin-bottom: 20px; }
+        label { display: block; text-align: left; font-weight: bold; color: #01579b; margin-top: 15px; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 15px; font-size: 1.1rem; border: 1px solid #90caf9; border-radius: 8px; background: white; }
+        button { background: #0277bd; color: white; border: none; padding: 15px 30px; font-size: 1rem; border-radius: 25px; cursor: pointer; width: 100%; margin-top: 25px; font-weight: bold; }
+        .result-box { margin-top: 30px; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: none; }
+        .time-left { font-size: 3rem; font-weight: 900; color: #0277bd; }
+    </style>
+</head>
+<body>
+
+    <div class="header">OXYGEN TANK TIMER</div>
+
+    <label>Tank Pressure (PSI)</label>
+    <input type="number" id="psi" placeholder="e.g. 1000">
+
+    <label>Flow Rate (Liters/min)</label>
+    <input type="number" id="flow" placeholder="e.g. 2, 4, 10...">
+
+    <label>Tank Size</label>
+    <select id="factor">
+        <option value="0.28">E Cylinder (Standard Transport)</option>
+        <option value="1.56">H Cylinder (Big Tank)</option>
+        <option value="3.14">M Cylinder</option>
+    </select>
+
+    <button onclick="calcO2()">CALCULATE TIME</button>
+
+    <div class="result-box" id="result">
+        <div>TIME REMAINING:</div>
+        <div class="time-left" id="mins">--</div>
+        <div style="font-size:0.9rem; color:#555; margin-top:5px;">(Includes 200 PSI safety buffer)</div>
+    </div>
+
+<script>
+    function calcO2() {
+        const psi = parseFloat(document.getElementById('psi').value);
+        const flow = parseFloat(document.getElementById('flow').value);
+        const factor = parseFloat(document.getElementById('factor').value);
+
+        if(!psi || !flow) return;
+
+        // Formula: (Current PSI - Safety Buffer 200) * Tank Factor / Flow Rate
+        const safePsi = Math.max(0, psi - 200);
+        const minutes = Math.floor((safePsi * factor) / flow);
+        
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('mins').innerText = minutes + " min";
+    }
+</script>
+</body>
+</html>
