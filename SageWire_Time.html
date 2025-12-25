@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SageWire Time + GPS</title>
+    <title>SageWire Time + Evidence</title>
     <style>
         body { font-family: sans-serif; padding: 20px; background-color: #f5f7fa; color: #263238; display: flex; flex-direction: column; align-items: center; }
         .container { width: 100%; max-width: 600px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         
         .header-brand { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #00897b; padding-bottom: 15px; }
         .header-brand h1 { color: #00897b; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
-        .header-brand p { color: #546e7a; margin: 5px 0 0; font-style: italic; font-size: 0.9em; }
 
         /* Dashboard */
         .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
@@ -29,12 +28,7 @@
         .dot { height: 8px; width: 8px; background-color: #f44336; border-radius: 50%; display: inline-block; }
         .dot.active { background-color: #00e676; box-shadow: 0 0 5px #00e676; }
 
-        /* Inputs */
-        .input-row { display: flex; gap: 10px; margin-top: 15px; justify-content: center; }
-        input { padding: 10px; border: 1px solid #cfd8dc; border-radius: 6px; width: 100px; text-align: center; }
-        label { font-size: 0.8rem; font-weight: bold; color: #b0bec5; display: block; margin-bottom: 4px;}
-
-        /* Buttons */
+        /* Controls */
         .controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         button { padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; color: white; }
         #btn-in { background: #2e7d32; }
@@ -42,9 +36,17 @@
         #btn-out { background: #c62828; }
         button:disabled { opacity: 0.3; cursor: not-allowed; }
 
-        /* Mileage Section */
-        .mileage-box { background: #eceff1; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
-        .mileage-label { font-weight: bold; color: #455a64; font-size: 0.9rem; }
+        /* Camera Section */
+        .camera-box { text-align: center; margin-bottom: 20px; background: #eee; padding: 10px; border-radius: 8px; display: none; }
+        video { width: 100%; border-radius: 8px; max-height: 300px; background: black; }
+        .snap-btn { background: #455a64; color: white; width: 100%; padding: 12px; margin-top: 10px; }
+
+        /* Inputs & Footer */
+        .input-row { display: flex; gap: 10px; margin-top: 15px; justify-content: center; }
+        input { padding: 10px; border: 1px solid #cfd8dc; border-radius: 6px; width: 100px; text-align: center; }
+        .footer-btns button { margin-top: 10px; width: 100%; }
+        
+        label { color: #aaa; font-size: 0.7rem; display: block; }
     </style>
 </head>
 <body>
@@ -52,7 +54,7 @@
 <div class="container">
     <div class="header-brand">
         <h1>SageWire TIME</h1>
-        <p>GPS & Mileage Tracker</p>
+        <p>GPS & Evidence Tracker</p>
     </div>
 
     <div class="dashboard-grid">
@@ -71,17 +73,19 @@
         <span class="status-badge" id="status-badge">OFF CLOCK</span>
         <div class="timer-display" id="main-timer">00:00:00</div>
         <div class="money-display" id="money-display">$0.00</div>
-
+        
         <div class="input-row">
-            <div>
-                <label>Hourly ($)</label>
-                <input type="number" id="hourly-rate" value="0" placeholder="0.00">
-            </div>
-            <div>
-                <label>Mile Rate ($)</label>
-                <input type="number" id="mile-rate" value="0.67" placeholder="0.67">
-            </div>
+            <div><label>Hourly</label><input type="number" id="hourly-rate" value="0" placeholder="$"></div>
+            <div><label>Mile Rate</label><input type="number" id="mile-rate" value="0.67" placeholder="$"></div>
         </div>
+    </div>
+
+    <button onclick="toggleCamera()" style="background:#37474f; width:100%; margin-bottom:15px; padding:12px;">📷 SNAP PROOF (Photo)</button>
+    
+    <div class="camera-box" id="cam-ui">
+        <video id="video" autoplay playsinline></video>
+        <button class="snap-btn" onclick="takePhoto()">CAPTURE & SAVE</button>
+        <canvas id="canvas" style="display:none;"></canvas>
     </div>
 
     <div class="controls">
@@ -90,34 +94,36 @@
         <button id="btn-out" onclick="markOut()" disabled>End</button>
     </div>
 
-    <div class="mileage-box">
-        <span class="mileage-label">🚗 MILES DRIVEN (This Shift):</span>
+    <div style="background:#eceff1; padding:15px; border-radius:8px; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
+        <span style="font-weight:bold; color:#455a64; font-size:0.9rem;">🚗 MILES DRIVEN:</span>
         <input type="number" id="miles-driven" placeholder="0" style="width:80px; background:white;">
     </div>
 
-    <div style="text-align:center;">
-        <button onclick="exportCSV()" style="background:#546e7a; width:100%; padding:12px;">💾 Export Log (CSV)</button>
-        <button onclick="clearHistory()" style="background:transparent; color:#e53935; border:1px solid #e53935; margin-top:10px; width:100%; padding:8px;">Reset All Data</button>
+    <div class="footer-btns">
+        <button onclick="exportCSV()" style="background:#546e7a;">💾 Export CSV Log</button>
+        <button onclick="clearHistory()" style="background:transparent; color:#e53935; border:1px solid #e53935;">Reset All Data</button>
     </div>
 </div>
 
 <script>
     let startTime, accumulated = 0, timerInt, isRunning = false;
-    let startCoords = ""; // Stores GPS "Lat,Long"
+    let startCoords = ""; 
     const history = JSON.parse(localStorage.getItem('sage_time_history')) || [];
     
-    // Elements
+    // UI Elements
     const elTimer = document.getElementById('main-timer');
     const elMoney = document.getElementById('money-display');
     const elStatus = document.getElementById('status-badge');
     const gpsDot = document.getElementById('gps-dot');
     const gpsText = document.getElementById('gps-text');
+    const camUI = document.getElementById('cam-ui');
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
     
     updateDashboard();
 
-    // 1. Mark In with GPS
+    // --- CORE TIMER ---
     function markIn() {
-        // Try GPS first
         getGPS((coords) => {
             startCoords = coords;
             startClockLogic();
@@ -132,58 +138,42 @@
         timerInt = setInterval(tick, 1000);
     }
 
-    // 2. Mark Out with GPS
     function markOut() {
         clearInterval(timerInt);
         const endMs = accumulated + (isRunning ? (Date.now() - startTime) : 0);
-        
-        // Grab End Location
-        getGPS((endCoords) => {
-            finalizeShift(endMs, endCoords);
-        });
+        getGPS((endCoords) => finalizeShift(endMs, endCoords));
     }
 
     function finalizeShift(endMs, endCoords) {
-        // Calcs
         const rate = parseFloat(document.getElementById('hourly-rate').value) || 0;
         const miles = parseFloat(document.getElementById('miles-driven').value) || 0;
         const mileRate = parseFloat(document.getElementById('mile-rate').value) || 0;
-        
-        const timePay = (endMs / 3600000) * rate;
-        const milePay = miles * mileRate;
-        const total = timePay + milePay;
+        const total = ((endMs / 3600000) * rate) + (miles * mileRate);
 
-        // Save
-        const record = {
-            date: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString(),
+        history.push({
+            date: new Date().toLocaleString(),
             duration: (endMs / 3600000).toFixed(2),
             miles: miles,
             totalPay: total.toFixed(2),
             startLoc: startCoords || "Not Captured",
             endLoc: endCoords || "Not Captured"
-        };
-        history.push(record);
+        });
         localStorage.setItem('sage_time_history', JSON.stringify(history));
 
-        // Reset
         isRunning = false; accumulated = 0; startCoords = "";
         document.getElementById('miles-driven').value = '';
-        elTimer.innerText = "00:00:00";
-        elMoney.innerText = "$0.00";
-        gpsDot.className = "dot";
-        gpsText.innerText = "NO GPS";
-        updateUI();
-        updateDashboard();
+        elTimer.innerText = "00:00:00"; elMoney.innerText = "$0.00";
+        gpsDot.className = "dot"; gpsText.innerText = "NO GPS";
+        updateUI(); updateDashboard();
         alert(`Shift Ended. Earned: $${total.toFixed(2)}`);
     }
 
     function togglePause() {
-        if(isRunning) { // Pause
+        if(isRunning) {
             clearInterval(timerInt);
             accumulated += Date.now() - startTime;
-            isRunning = false;
-            elStatus.innerText = "PAUSED";
-        } else { // Resume
+            isRunning = false; elStatus.innerText = "PAUSED";
+        } else {
             startTime = Date.now();
             isRunning = true;
             timerInt = setInterval(tick, 1000);
@@ -197,11 +187,71 @@
         const min = Math.floor((ms / 60000) % 60).toString().padStart(2,'0');
         const hr = Math.floor(ms / 3600000).toString().padStart(2,'0');
         elTimer.innerText = `${hr}:${min}:${sec}`;
-        
         const rate = parseFloat(document.getElementById('hourly-rate').value) || 0;
         elMoney.innerText = "$" + ((ms/3600000)*rate).toFixed(2);
     }
 
+    // --- GPS ---
+    function getGPS(callback) {
+        if (!navigator.geolocation) { callback("No Support"); return; }
+        gpsText.innerText = "LOCATING...";
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const c = `${pos.coords.latitude.toFixed(5)},${pos.coords.longitude.toFixed(5)}`;
+                gpsDot.className = "dot active"; gpsText.innerText = "GPS LOCKED";
+                callback(c);
+            },
+            (err) => {
+                gpsDot.className = "dot"; gpsText.innerText = "GPS ERROR";
+                callback("Error");
+                if(!isRunning && !startCoords) startClockLogic();
+            },
+            { enableHighAccuracy: true, timeout: 5000 }
+        );
+    }
+
+    // --- CAMERA EVIDENCE ---
+    function toggleCamera() {
+        if (camUI.style.display === 'block') {
+            camUI.style.display = 'none';
+            const stream = video.srcObject;
+            if(stream) stream.getTracks().forEach(track => track.stop());
+        } else {
+            camUI.style.display = 'block';
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                .then(stream => { video.srcObject = stream; })
+                .catch(err => alert("Camera blocked. Please allow access."));
+        }
+    }
+
+    function takePhoto() {
+        const ctx = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        
+        // Draw Video
+        ctx.drawImage(video, 0, 0);
+        
+        // Add Watermark Overlay
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.fillRect(0, canvas.height - 60, canvas.width, 60);
+        
+        ctx.fillStyle = "white";
+        ctx.font = "20px monospace";
+        const time = new Date().toLocaleString();
+        const loc = gpsText.innerText === "GPS LOCKED" ? "GPS VERIFIED" : "NO GPS";
+        ctx.fillText(`PROOF: ${time} | ${loc}`, 20, canvas.height - 25);
+
+        // Download
+        const link = document.createElement('a');
+        link.download = `Proof_${Date.now()}.jpg`;
+        link.href = canvas.toDataURL('image/jpeg');
+        link.click();
+        
+        toggleCamera(); // Close cam
+    }
+
+    // --- UTILS ---
     function updateUI() {
         document.getElementById('btn-in').disabled = isRunning;
         document.getElementById('btn-pause').disabled = false;
@@ -216,58 +266,20 @@
         document.getElementById('val-earn').innerText = "$" + m.toFixed(0);
     }
 
-    // --- GPS ENGINE ---
-    function getGPS(callback) {
-        if (!navigator.geolocation) {
-            alert("GPS not supported by this browser.");
-            callback("Unsupported");
-            return;
-        }
-        
-        gpsText.innerText = "LOCATING...";
-        
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const lat = position.coords.latitude.toFixed(5);
-                const long = position.coords.longitude.toFixed(5);
-                gpsDot.className = "dot active";
-                gpsText.innerText = "GPS LOCKED";
-                callback(`${lat},${long}`);
-            },
-            (error) => {
-                console.error("GPS Error:", error);
-                gpsDot.className = "dot";
-                gpsText.innerText = "GPS DENIED";
-                callback("Denied/Error");
-                // Allow clocking in even if GPS fails (don't block the user)
-                if(!isRunning && !startCoords) startClockLogic();
-            },
-            { enableHighAccuracy: true, timeout: 5000 }
-        );
-    }
-
     function exportCSV() {
-        let csv = "Date,Hours,Miles,Total Earned,Start GPS,End GPS,Map Link\n";
+        let csv = "Date,Hours,Miles,Total Earned,Start GPS,End GPS\n";
         history.forEach(r => {
-            // Generate clickable Google Maps link
-            let mapLink = "N/A";
-            if(r.startLoc && r.startLoc.includes(",")) {
-                mapLink = `https://www.google.com/maps?q=${r.startLoc}`;
-            }
-            csv += `${r.date},${r.duration},${r.miles},${r.totalPay},"${r.startLoc}","${r.endLoc}","${mapLink}"\n`;
+            let link = r.startLoc.includes(",") ? `http://maps.google.com/?q=${r.startLoc}` : "N/A";
+            csv += `"${r.date}",${r.duration},${r.miles},${r.totalPay},"${r.startLoc}","${r.endLoc}"\n`;
         });
-        
         const link = document.createElement("a");
         link.href = "data:text/csv;charset=utf-8," + encodeURI(csv);
-        link.download = "SageWire_GPS_Log.csv";
+        link.download = "SageWire_Log.csv";
         link.click();
     }
     
     function clearHistory() {
-        if(confirm("Delete all logs?")) {
-            localStorage.removeItem('sage_time_history');
-            location.reload();
-        }
+        if(confirm("Delete logs?")) { localStorage.removeItem('sage_time_history'); location.reload(); }
     }
 </script>
 </body>
