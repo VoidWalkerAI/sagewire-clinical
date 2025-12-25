@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SageWire Pharma</title>
+    <style>
+        body { background: #e1bee7; font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+        .header { background: #6a1b9a; color: white; padding: 15px; font-weight: bold; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+        
+        .grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .card { background: white; padding: 15px; border-radius: 8px; border-left: 6px solid #6a1b9a; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        .suffix { font-weight: 900; font-size: 1.2rem; color: #4a148c; letter-spacing: 1px; }
+        .class-name { font-size: 0.8rem; font-weight: bold; color: #888; text-transform: uppercase; margin-bottom: 5px; }
+        .hint { font-size: 0.95rem; color: #333; }
+        .example { font-style: italic; color: #666; font-size: 0.8rem; margin-top: 4px; }
+        
+        /* Colors for different systems */
+        .card.heart { border-color: #d32f2f; }
+        .card.lung { border-color: #0288d1; }
+        .card.inf { border-color: #388e3c; }
+        .card.pain { border-color: #f57c00; }
+    </style>
+</head>
+<body>
+
+    <div class="header">DRUG DECODER</div>
+
+    <div class="grid">
+        <div class="card heart">
+            <div class="class-name">Beta Blockers</div>
+            <div class="suffix">-LOL</div>
+            <div class="hint">"Brakes" for the heart. Lowers HR & BP.</div>
+            <div class="example">Metoprolol, Atenolol</div>
+        </div>
+        
+        <div class="card heart">
+            <div class="class-name">ACE Inhibitors</div>
+            <div class="suffix">-PRIL</div>
+            <div class="hint">Relaxes the pipes. Lowers BP. Watch for dry cough.</div>
+            <div class="example">Lisinopril, Enalapril</div>
+        </div>
+
+        <div class="card heart">
+            <div class="class-name">Cholesterol</div>
+            <div class="suffix">-STATIN</div>
+            <div class="hint">Keeps pipes clean. Take at dinner.</div>
+            <div class="example">Atorvastatin, Simvastatin</div>
+        </div>
+
+        <div class="card inf">
+            <div class="class-name">Penicillins</div>
+            <div class="suffix">-CILLIN</div>
+            <div class="hint">Antibiotic. Common allergy!</div>
+            <div class="example">Amoxicillin, Penicillin</div>
+        </div>
+        
+        <div class="card inf">
+            <div class="class-name">Antibiotics</div>
+            <div class="suffix">-MYCIN</div>
+            <div class="hint">Strong antibiotics. Watch the kidneys/ears.</div>
+            <div class="example">Vancomycin, Azithromycin</div>
+        </div>
+
+        <div class="card lung">
+            <div class="class-name">Steroids</div>
+            <div class="suffix">-SONE</div>
+            <div class="hint">Reduces swelling. Increases blood sugar.</div>
+            <div class="example">Prednisone, Fluticasone</div>
+        </div>
+        
+        <div class="card lung">
+            <div class="class-name">Bronchodilators</div>
+            <div class="suffix">-TEROL</div>
+            <div class="hint">Opens airways. Causes jitters/fast HR.</div>
+            <div class="example">Albuterol, Salmeterol</div>
+        </div>
+
+        <div class="card pain">
+            <div class="class-name">Local Anesthetic</div>
+            <div class="suffix">-CAINE</div>
+            <div class="hint">Numbing agent. Stops the signal.</div>
+            <div class="example">Lidocaine, Novocaine</div>
+        </div>
+
+    </div>
+
+</body>
+</html>
