@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SageWire Clinical | Home</title>
+    <title>SageWire Clinical | Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
@@ -20,6 +20,8 @@
             --gi: #2e7d32;
             --ortho: #455a64;
             --skin: #e53935;
+            --pharma: #8e24aa; /* Purple for Meds */
+            --fluids: #00acc1; /* Cyan for Fluids */
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -59,18 +61,27 @@
             max-width: 600px; margin: 0 auto; width: 100%;
         }
 
+        /* --- SECTION TITLE --- */
+        .section-label {
+            grid-column: 1 / -1;
+            font-size: 0.75rem; font-weight: 800; color: #90a4ae;
+            text-transform: uppercase; letter-spacing: 1px;
+            margin-top: 20px; margin-bottom: 5px;
+        }
+        .section-label:first-child { margin-top: 0; }
+
         /* --- DEPT BUTTONS --- */
         .dept-btn {
             background: white;
             border: none;
             border-radius: 12px;
-            padding: 20px 15px;
+            padding: 15px;
             text-align: center;
             text-decoration: none;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             transition: transform 0.2s, box-shadow 0.2s;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 140px;
+            height: 130px;
             position: relative;
             overflow: hidden;
         }
@@ -82,14 +93,14 @@
         }
 
         .dept-icon {
-            font-size: 2rem; margin-bottom: 10px;
+            font-size: 2rem; margin-bottom: 8px;
         }
         .dept-name {
-            font-weight: 800; font-size: 1rem; color: var(--col-text);
+            font-weight: 800; font-size: 0.95rem; color: var(--col-text);
             text-transform: uppercase; letter-spacing: 0.5px;
         }
         .dept-desc {
-            font-size: 0.75rem; color: #90a4ae; margin-top: 4px; font-weight: 600;
+            font-size: 0.7rem; color: #90a4ae; margin-top: 4px; font-weight: 600;
         }
 
         /* Specific Colors */
@@ -111,10 +122,16 @@
         .btn-skin::before { background: var(--skin); }
         .btn-skin .dept-icon { color: var(--skin); }
 
+        .btn-pharma::before { background: var(--pharma); }
+        .btn-pharma .dept-icon { color: var(--pharma); }
+
+        .btn-fluids::before { background: var(--fluids); }
+        .btn-fluids .dept-icon { color: var(--fluids); }
+
 
         /* --- FOOTER --- */
         .footer {
-            text-align: center; padding: 20px; color: #b0bec5; font-size: 0.8rem;
+            text-align: center; padding: 30px 20px; color: #b0bec5; font-size: 0.8rem;
         }
 
     </style>
@@ -123,11 +140,13 @@
 
     <div class="hero">
         <h1>SAGEWIRE CLINICAL</h1>
-        <p>The Bedside Translator</p>
+        <p>The Digital Preceptor</p>
     </div>
 
     <div class="grid-container">
         
+        <div class="section-label">Translations</div>
+
         <a href="SageWire_Cardio.html" class="dept-btn btn-cardio">
             <div class="dept-icon">🫀</div>
             <div class="dept-name">Cardio</div>
@@ -164,10 +183,24 @@
             <div class="dept-desc">The Armor</div>
         </a>
 
+        <div class="section-label">Calculators</div>
+
+        <a href="SageWire_Pharma.html" class="dept-btn btn-pharma">
+            <div class="dept-icon">💊</div>
+            <div class="dept-name">Pharma</div>
+            <div class="dept-desc">Dose Calc</div>
+        </a>
+
+        <a href="SageWire_Fluids.html" class="dept-btn btn-fluids">
+            <div class="dept-icon">💧</div>
+            <div class="dept-name">Fluids</div>
+            <div class="dept-desc">Drip Rate</div>
+        </a>
+
     </div>
 
     <div class="footer">
-        SageWire Scholastic Tool v1.0<br>
+        SageWire Scholastic Tool v1.1<br>
         Forged for the Modern Student
     </div>
 
