@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SageWire Time + Evidence</title>
+    <title>SageWire Time v6.3</title>
     <style>
         body { font-family: sans-serif; padding: 20px; background-color: #f5f7fa; color: #263238; display: flex; flex-direction: column; align-items: center; }
         .container { width: 100%; max-width: 600px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
@@ -28,29 +28,53 @@
         .dot { height: 8px; width: 8px; background-color: #f44336; border-radius: 50%; display: inline-block; }
         .dot.active { background-color: #00e676; box-shadow: 0 0 5px #00e676; }
 
+        /* Camera Section */
+        .camera-box { text-align: center; margin-bottom: 20px; background: #eee; padding: 10px; border-radius: 8px; display: none; position: relative; }
+        video { width: 100%; border-radius: 8px; max-height: 400px; background: black; transform: scaleX(-1); }
+        video.rear { transform: scaleX(1); }
+        
+        .cam-controls { display: flex; gap: 10px; margin-top: 10px; }
+        .snap-btn { background: #455a64; color: white; flex: 2; padding: 12px; font-weight:bold; border:none; border-radius:8px; cursor:pointer;}
+        .flip-btn { background: #78909c; color: white; flex: 1; padding: 12px; font-weight:bold; border:none; border-radius:8px; cursor:pointer;}
+        .close-cam { position: absolute; top: -10px; right: -10px; background: #c62828; color: white; border-radius: 50%; width: 30px; height: 30px; line-height: 30px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+
+        /* ACTIVITY LOG */
+        .log-box { 
+            background: #f1f8e9; 
+            border: 1px solid #c5e1a5; 
+            border-radius: 8px; 
+            padding: 10px; 
+            margin-bottom: 20px; 
+            max-height: 200px; 
+            overflow-y: auto; 
+            font-size: 0.85rem;
+            display: none; 
+        }
+        .log-entry { border-bottom: 1px solid #dcedc8; padding: 8px 0; display: flex; justify-content: space-between; align-items: center; }
+        .log-entry:last-child { border-bottom: none; }
+        .log-time { font-weight: bold; color: #558b2f; font-size: 0.8rem; }
+        .log-text { color: #33691e; flex:1; margin-left:10px; }
+        .log-loc { font-size: 0.7rem; color: #555; background: #e8f5e9; padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+
         /* Controls */
-        .controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         button { padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; color: white; }
         #btn-in { background: #2e7d32; }
         #btn-pause { background: #f9a825; color: black; }
         #btn-out { background: #c62828; }
-        button:disabled { opacity: 0.3; cursor: not-allowed; }
-
-        /* Camera Section */
-        .camera-box { text-align: center; margin-bottom: 20px; background: #eee; padding: 10px; border-radius: 8px; display: none; }
-        video { width: 100%; border-radius: 8px; max-height: 400px; background: black; transform: scaleX(-1); /* Mirror selfie */ }
-        video.rear { transform: scaleX(1); /* Don't mirror rear cam */ }
         
-        .cam-controls { display: flex; gap: 10px; margin-top: 10px; }
-        .snap-btn { background: #455a64; color: white; flex: 2; padding: 12px; }
-        .flip-btn { background: #78909c; color: white; flex: 1; padding: 12px; }
+        .waypoint-box { margin-bottom: 20px; display:flex; flex-direction:column; gap:5px; }
+        .note-input { padding: 12px; border: 2px solid #0277bd; border-radius: 8px; font-size: 1rem; width: 100%; box-sizing: border-box; }
+        .waypoint-btn { width: 100%; background: #0277bd; padding: 15px; font-size: 1rem; box-shadow: 0 4px 0 #01579b; border-radius: 8px; color:white; font-weight:bold; border:none; cursor:pointer;}
+        .waypoint-btn:active { transform: translateY(4px); box-shadow: none; }
+        
+        button:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; transform:none;}
 
-        /* Inputs & Footer */
         .input-row { display: flex; gap: 10px; margin-top: 15px; justify-content: center; }
         input { padding: 10px; border: 1px solid #cfd8dc; border-radius: 6px; width: 100px; text-align: center; }
-        .footer-btns button { margin-top: 10px; width: 100%; }
-        
         label { color: #aaa; font-size: 0.7rem; display: block; }
+        
+        .footer-btns button { margin-top: 10px; width: 100%; }
     </style>
 </head>
 <body>
@@ -58,7 +82,7 @@
 <div class="container">
     <div class="header-brand">
         <h1>SageWire TIME</h1>
-        <p>GPS & Evidence Tracker</p>
+        <p>Route & Visit Logger</p>
     </div>
 
     <div class="dashboard-grid">
@@ -79,26 +103,37 @@
         <div class="money-display" id="money-display">$0.00</div>
         
         <div class="input-row">
-            <div><label>Hourly</label><input type="number" id="hourly-rate" value="0" placeholder="$"></div>
-            <div><label>Mile Rate</label><input type="number" id="mile-rate" value="0.67" placeholder="$"></div>
+            <div><label>Hourly</label><input type="number" id="hourly-rate" placeholder="$" onchange="saveSettings()"></div>
+            <div><label>Mile Rate</label><input type="number" id="mile-rate" placeholder="$" onchange="saveSettings()"></div>
         </div>
     </div>
 
-    <button onclick="openCamera()" style="background:#37474f; width:100%; margin-bottom:15px; padding:12px;">📷 SNAP SELFIE PROOF</button>
+    <button onclick="openCamera()" style="background:#37474f; width:100%; margin-bottom:15px; padding:12px;">📷 SNAP PROOF (PHOTO)</button>
     
     <div class="camera-box" id="cam-ui">
+        <div class="close-cam" onclick="closeCamera()">X</div>
         <video id="video" autoplay playsinline></video>
         <div class="cam-controls">
             <button class="flip-btn" onclick="flipCamera()">🔄 FLIP</button>
-            <button class="snap-btn" onclick="takePhoto()">CAPTURE & SAVE</button>
+            <button class="snap-btn" onclick="takePhoto()">CAPTURE</button>
         </div>
         <canvas id="canvas" style="display:none;"></canvas>
     </div>
 
     <div class="controls">
-        <button id="btn-in" onclick="markIn()">Start</button>
+        <button id="btn-in" onclick="markIn()">Start Day</button>
         <button id="btn-pause" onclick="togglePause()" disabled>Pause</button>
-        <button id="btn-out" onclick="markOut()" disabled>End</button>
+        <button id="btn-out" onclick="markOut()" disabled>End Day</button>
+    </div>
+
+    <div class="waypoint-box">
+        <input type="text" id="waypoint-note" class="note-input" placeholder="Type Visit Note... (e.g. Pt Smith)">
+        <button class="waypoint-btn" id="btn-waypoint" onclick="logWaypoint()" disabled>📍 CHECK IN / LOG STOP</button>
+    </div>
+
+    <div class="log-box" id="activity-log">
+        <div style="text-align:center; color:#7cb342; font-weight:bold; margin-bottom:5px;">ROUTE LOG</div>
+        <div id="log-entries"></div>
     </div>
 
     <div style="background:#eceff1; padding:15px; border-radius:8px; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
@@ -107,16 +142,19 @@
     </div>
 
     <div class="footer-btns">
-        <button onclick="exportCSV()" style="background:#546e7a;">💾 Export CSV Log</button>
+        <button onclick="exportCSV()" style="background:#546e7a;">💾 Export Log (CSV)</button>
         <button onclick="clearHistory()" style="background:transparent; color:#e53935; border:1px solid #e53935;">Reset All Data</button>
     </div>
 </div>
 
 <script>
+    // State Variables
     let startTime, accumulated = 0, timerInt, isRunning = false;
     let startCoords = ""; 
+    let latestCoords = ""; 
     let currentStream;
-    let facingMode = "user"; // Default to Selfie
+    let facingMode = "user"; 
+    let currentSessionLog = []; 
     const history = JSON.parse(localStorage.getItem('sage_time_history')) || [];
     
     // UI Elements
@@ -128,51 +166,148 @@
     const camUI = document.getElementById('cam-ui');
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
+    const logBox = document.getElementById('activity-log');
+    const logEntries = document.getElementById('log-entries');
+    const btnWaypoint = document.getElementById('btn-waypoint');
+    const noteInput = document.getElementById('waypoint-note');
+    const inHourly = document.getElementById('hourly-rate');
+    const inMile = document.getElementById('mile-rate');
     
-    updateDashboard();
+    // --- INITIALIZATION ---
+    window.onload = function() {
+        loadSettings();
+        restoreSession(); // THE FIX: Restore state if page refreshed
+        updateDashboard();
+    };
+
+    function saveSettings() {
+        localStorage.setItem('sage_settings', JSON.stringify({
+            hourly: inHourly.value,
+            mile: inMile.value
+        }));
+    }
+
+    function loadSettings() {
+        const set = JSON.parse(localStorage.getItem('sage_settings'));
+        if(set) {
+            inHourly.value = set.hourly;
+            inMile.value = set.mile;
+        } else {
+            // Defaults
+            if(!inHourly.value) inHourly.value = "0";
+            if(!inMile.value) inMile.value = "0.67";
+        }
+    }
+
+    // --- STATE PERSISTENCE (The Bulletproof Fix) ---
+    function saveSessionState() {
+        const state = {
+            startTime, accumulated, isRunning, startCoords, currentSessionLog
+        };
+        localStorage.setItem('sage_active_session', JSON.stringify(state));
+    }
+
+    function clearSessionState() {
+        localStorage.removeItem('sage_active_session');
+    }
+
+    function restoreSession() {
+        const state = JSON.parse(localStorage.getItem('sage_active_session'));
+        if(state && state.isRunning) {
+            // Restore Variables
+            startTime = state.startTime;
+            accumulated = state.accumulated;
+            isRunning = true;
+            startCoords = state.startCoords;
+            currentSessionLog = state.currentSessionLog || [];
+            
+            // Restore UI Log
+            logBox.style.display = 'block';
+            logEntries.innerHTML = '';
+            // Re-render logs in reverse order (newest top)
+            // But log is stored chronological, so we loop normally and prepend
+            currentSessionLog.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'log-entry';
+                let locBadge = item.coords ? `<span class="log-loc">GPS ✓</span>` : '';
+                div.innerHTML = `<span class="log-time">${item.time}</span> <span class="log-text">${item.message}</span> ${locBadge}`;
+                logEntries.prepend(div);
+            });
+
+            // Resume Timer
+            updateUI();
+            timerInt = setInterval(tick, 1000);
+            tick(); // Update immediately
+        }
+    }
+
+    // --- LOGGING ---
+    function logEvent(message, coords = "") {
+        logBox.style.display = 'block';
+        const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        currentSessionLog.push({ time, message, coords });
+        saveSessionState(); // Save on every event
+
+        const div = document.createElement('div');
+        div.className = 'log-entry';
+        let locBadge = coords ? `<span class="log-loc">GPS ✓</span>` : '';
+        div.innerHTML = `<span class="log-time">${time}</span> <span class="log-text">${message}</span> ${locBadge}`;
+        logEntries.prepend(div);
+    }
 
     // --- CORE TIMER ---
     function markIn() {
         getGPS((coords) => {
             startCoords = coords;
-            startClockLogic();
+            startTime = Date.now();
+            accumulated = 0;
+            isRunning = true;
+            currentSessionLog = [];
+            logEntries.innerHTML = '';
+            
+            const status = gpsText.innerText.includes("LOCKED") ? "Start Shift (GPS Locked)" : "Start Shift (No GPS)";
+            logEvent(status, startCoords);
+            
+            updateUI();
+            timerInt = setInterval(tick, 1000);
+            saveSessionState();
         });
-    }
-
-    function startClockLogic() {
-        startTime = Date.now();
-        accumulated = 0;
-        isRunning = true;
-        updateUI();
-        timerInt = setInterval(tick, 1000);
     }
 
     function markOut() {
         clearInterval(timerInt);
         const endMs = accumulated + (isRunning ? (Date.now() - startTime) : 0);
-        getGPS((endCoords) => finalizeShift(endMs, endCoords));
+        
+        getGPS((endCoords) => {
+            logEvent("End Shift", endCoords);
+            finalizeShift(endMs, endCoords);
+        });
     }
 
     function finalizeShift(endMs, endCoords) {
-        const rate = parseFloat(document.getElementById('hourly-rate').value) || 0;
+        const rate = parseFloat(inHourly.value) || 0;
         const miles = parseFloat(document.getElementById('miles-driven').value) || 0;
-        const mileRate = parseFloat(document.getElementById('mile-rate').value) || 0;
+        const mileRate = parseFloat(inMile.value) || 0;
         const total = ((endMs / 3600000) * rate) + (miles * mileRate);
+
+        const routeString = currentSessionLog.map(e => `[${e.time}] ${e.message}`).join(" | ");
 
         history.push({
             date: new Date().toLocaleString(),
             duration: (endMs / 3600000).toFixed(2),
             miles: miles,
             totalPay: total.toFixed(2),
-            startLoc: startCoords || "Not Captured",
-            endLoc: endCoords || "Not Captured"
+            routeLog: routeString
         });
         localStorage.setItem('sage_time_history', JSON.stringify(history));
-
+        
+        // Reset
         isRunning = false; accumulated = 0; startCoords = "";
+        clearSessionState(); // Clear persistence
         document.getElementById('miles-driven').value = '';
         elTimer.innerText = "00:00:00"; elMoney.innerText = "$0.00";
         gpsDot.className = "dot"; gpsText.innerText = "NO GPS";
+        
         updateUI(); updateDashboard();
         alert(`Shift Ended. Earned: $${total.toFixed(2)}`);
     }
@@ -182,12 +317,29 @@
             clearInterval(timerInt);
             accumulated += Date.now() - startTime;
             isRunning = false; elStatus.innerText = "PAUSED";
+            logEvent("Paused Timer");
         } else {
             startTime = Date.now();
             isRunning = true;
             timerInt = setInterval(tick, 1000);
             updateUI();
+            logEvent("Resumed Timer");
         }
+        saveSessionState();
+    }
+
+    function logWaypoint() {
+        if(!isRunning) return;
+        let userNote = noteInput.value.trim();
+        if(!userNote) userNote = "Routine Check-In"; 
+
+        getGPS((coords) => {
+            logEvent(`📍 ${userNote}`, coords);
+            noteInput.value = ""; 
+            const origText = btnWaypoint.innerText;
+            btnWaypoint.innerText = "✅ SAVED!";
+            setTimeout(() => btnWaypoint.innerText = "📍 CHECK IN / LOG STOP", 1500);
+        });
     }
 
     function tick() {
@@ -196,139 +348,107 @@
         const min = Math.floor((ms / 60000) % 60).toString().padStart(2,'0');
         const hr = Math.floor(ms / 3600000).toString().padStart(2,'0');
         elTimer.innerText = `${hr}:${min}:${sec}`;
-        const rate = parseFloat(document.getElementById('hourly-rate').value) || 0;
+        const rate = parseFloat(inHourly.value) || 0;
         elMoney.innerText = "$" + ((ms/3600000)*rate).toFixed(2);
     }
 
-    // --- GPS ENGINE ---
+    // --- GPS ---
     function getGPS(callback) {
-        if (!navigator.geolocation) { callback("No Support"); return; }
+        if (!navigator.geolocation) { if(callback) callback("No Support"); return; }
         gpsText.innerText = "LOCATING...";
         navigator.geolocation.getCurrentPosition(
             (pos) => {
                 const c = `${pos.coords.latitude.toFixed(5)},${pos.coords.longitude.toFixed(5)}`;
+                latestCoords = c;
                 gpsDot.className = "dot active"; gpsText.innerText = "GPS LOCKED";
                 if(callback) callback(c);
             },
             (err) => {
+                latestCoords = "NO DATA";
                 gpsDot.className = "dot"; gpsText.innerText = "GPS ERROR";
-                if(callback) callback("Error");
-                if(!isRunning && !startCoords && callback) startClockLogic();
+                if(callback) callback("Error"); 
+                // Fallback: Start even if GPS fails
+                if(!isRunning && !startCoords && callback && callback.name === "markIn") {
+                    startCoords = "No GPS"; startClockLogic();
+                }
             },
-            { enableHighAccuracy: true, timeout: 5000 }
+            { enableHighAccuracy: true, timeout: 10000 } // Increased to 10s
         );
     }
 
-    // --- CAMERA EVIDENCE (Updated for Selfie) ---
+    // --- CAMERA ---
     function openCamera() {
-        // Try to get GPS when camera opens (so it's ready for the photo)
-        getGPS();
-        
-        camUI.style.display = 'block';
-        startCameraStream();
+        getGPS(); camUI.style.display = 'block'; startCameraStream();
     }
-
+    function closeCamera() {
+        camUI.style.display = 'none';
+        if(currentStream) currentStream.getTracks().forEach(track => track.stop());
+    }
     function startCameraStream() {
-        if (currentStream) {
-            currentStream.getTracks().forEach(track => track.stop());
-        }
-        
+        if (currentStream) { currentStream.getTracks().forEach(track => track.stop()); }
         const constraints = { video: { facingMode: facingMode } };
-        
         navigator.mediaDevices.getUserMedia(constraints)
             .then(stream => { 
                 currentStream = stream;
                 video.srcObject = stream; 
-                // CSS Mirroring for Selfie
                 if(facingMode === 'user') video.classList.remove('rear');
                 else video.classList.add('rear');
             })
-            .catch(err => alert("Camera blocked. Please allow access."));
+            .catch(err => alert("Camera blocked."));
     }
-
     function flipCamera() {
         facingMode = facingMode === "user" ? "environment" : "user";
         startCameraStream();
     }
-
     function takePhoto() {
-    const ctx = canvas.getContext('2d');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    
-    // --- 1. HANDLE MIRRORING (For Selfies) ---
-    // If using front camera, flip the image horizontally so it acts like a mirror
-    if (facingMode === 'user') {
-        ctx.translate(canvas.width, 0);
-        ctx.scale(-1, 1);
+        const ctx = canvas.getContext('2d');
+        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+        if (facingMode === 'user') { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
+        ctx.drawImage(video, 0, 0);
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        
+        ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+        ctx.fillRect(0, canvas.height - 80, canvas.width, 80);
+        
+        const time = new Date().toLocaleString();
+        const coordText = (latestCoords && latestCoords !== "NO DATA") ? latestCoords : "NO DATA";
+        const lockStatus = gpsText.innerText.includes("LOCKED") ? "(GPS LOCKED)" : "(NO GPS)";
+
+        ctx.fillStyle = "#00e676"; ctx.font = "bold 24px monospace";
+        ctx.fillText(`PROOF OF LIFE: ${time}`, 30, canvas.height - 45);
+        ctx.fillStyle = "white"; ctx.font = "20px monospace";
+        ctx.fillText(`LOC: ${coordText} ${lockStatus}`, 30, canvas.height - 20);
+
+        const link = document.createElement('a');
+        link.download = `SageWire_Proof_${Date.now()}.jpg`;
+        link.href = canvas.toDataURL('image/jpeg');
+        link.click();
+        logEvent("📸 Photo Proof Saved", latestCoords);
+        closeCamera();
     }
-    
-    // --- 2. DRAW VIDEO FRAME ---
-    ctx.drawImage(video, 0, 0);
-    
-    // --- 3. RESET TRANSFORM ---
-    // Critical: We must reset the mirror effect so the TEXT isn't written backwards!
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    
-    // --- 4. ADD WATERMARK OVERLAY ---
-    // Dark bar background for readability
-    ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-    ctx.fillRect(0, canvas.height - 80, canvas.width, 80);
-    
-    // GPS Logic: Check if we actually have a lock
-    // We check .includes("LOCKED") to be safe against different text variations
-    const isLocked = gpsText.innerText.includes("LOCKED");
-    const gpsStatus = isLocked ? "GPS VERIFIED ✅" : "GPS MISSING ⚠️";
-    const time = new Date().toLocaleString();
 
-    // Line 1: Timestamp (Bright Green for visibility)
-    ctx.fillStyle = "#00e676"; 
-    ctx.font = "bold 24px monospace";
-    ctx.fillText(`PROOF OF LIFE: ${time}`, 30, canvas.height - 45);
-
-    // Line 2: Location Status (White)
-    ctx.fillStyle = "white";
-    ctx.font = "20px monospace";
-    ctx.fillText(`LOC: ${gpsStatus}`, 30, canvas.height - 20);
-
-    // --- 5. SAVE & DOWNLOAD ---
-    const link = document.createElement('a');
-    link.download = `SageWire_Proof_${Date.now()}.jpg`;
-    link.href = canvas.toDataURL('image/jpeg');
-    link.click();
-    
-    // --- 6. CLEANUP (Turn off Camera) ---
-    camUI.style.display = 'none';
-    if(currentStream) currentStream.getTracks().forEach(track => track.stop());
-}
-    
-
-    // --- UTILS ---
+    // --- DASHBOARD ---
     function updateUI() {
         document.getElementById('btn-in').disabled = isRunning;
         document.getElementById('btn-pause').disabled = false;
         document.getElementById('btn-out').disabled = false;
+        document.getElementById('btn-waypoint').disabled = !isRunning;
         elStatus.innerText = isRunning ? "ON CLOCK" : "OFF CLOCK";
     }
-
     function updateDashboard() {
         let h = 0, m = 0;
         history.forEach(r => { h += parseFloat(r.duration); m += parseFloat(r.totalPay); });
         document.getElementById('val-hours').innerText = h.toFixed(1);
         document.getElementById('val-earn').innerText = "$" + m.toFixed(0);
     }
-
     function exportCSV() {
-        let csv = "Date,Hours,Miles,Total Earned,Start GPS,End GPS\n";
-        history.forEach(r => {
-            csv += `"${r.date}",${r.duration},${r.miles},${r.totalPay},"${r.startLoc}","${r.endLoc}"\n`;
-        });
+        let csv = "Date,Hours,Miles,Total Earned,Route Log\n";
+        history.forEach(r => { csv += `"${r.date}",${r.duration},${r.miles},${r.totalPay},"${r.routeLog}"\n`; });
         const link = document.createElement("a");
         link.href = "data:text/csv;charset=utf-8," + encodeURI(csv);
         link.download = "SageWire_Log.csv";
         link.click();
     }
-    
     function clearHistory() {
         if(confirm("Delete logs?")) { localStorage.removeItem('sage_time_history'); location.reload(); }
     }
