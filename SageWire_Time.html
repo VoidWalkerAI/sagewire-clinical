@@ -252,51 +252,56 @@
     }
 
     function takePhoto() {
-        const ctx = canvas.getContext('2d');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        
-        // Handle Mirroring for Canvas
-        if (facingMode === 'user') {
-            ctx.translate(canvas.width, 0);
-            ctx.scale(-1, 1);
-        }
-        
-        // Draw Video
-        ctx.drawImage(video, 0, 0);
-        
-        // Reset Transform for Text
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        
-        // ADD WATERMARK OVERLAY ---
-        // This draws the semi-transparent black bar at the bottom
-        ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-        ctx.fillRect(0, canvas.height - 80, canvas.width, 80);
+    const ctx = canvas.getContext('2d');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
     
-        // This adds the "PROOF OF LIFE" text in Neon Green
-        ctx.fillStyle = "#00e676"; 
-        ctx.font = "bold 24px monospace";
-        ctx.fillText(`PROOF OF LIFE: ${time}`, 30, canvas.height - 45);
-
-        
-        // Only verify GPS if green
-        const gpsStatus = gpsText.innerText === "GPS LOCKED" ? "GPS VERIFIED ✅" : "GPS MISSING ⚠️";
-        
-        ctx.fillText(`PROOF OF LIFE: ${time}`, 30, canvas.height - 45);
-        ctx.fillStyle = "white";
-        ctx.font = "20px monospace";
-        ctx.fillText(`LOC: ${gpsStatus}`, 30, canvas.height - 20);
-
-        // Download
-        const link = document.createElement('a');
-        link.download = `SageWire_Proof_${Date.now()}.jpg`;
-        link.href = canvas.toDataURL('image/jpeg');
-        link.click();
-        
-        // Cleanup
-        camUI.style.display = 'none';
-        if(currentStream) currentStream.getTracks().forEach(track => track.stop());
+    // --- 1. HANDLE MIRRORING (For Selfies) ---
+    // If using front camera, flip the image horizontally so it acts like a mirror
+    if (facingMode === 'user') {
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
     }
+    
+    // --- 2. DRAW VIDEO FRAME ---
+    ctx.drawImage(video, 0, 0);
+    
+    // --- 3. RESET TRANSFORM ---
+    // Critical: We must reset the mirror effect so the TEXT isn't written backwards!
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    
+    // --- 4. ADD WATERMARK OVERLAY ---
+    // Dark bar background for readability
+    ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+    ctx.fillRect(0, canvas.height - 80, canvas.width, 80);
+    
+    // GPS Logic: Check if we actually have a lock
+    // We check .includes("LOCKED") to be safe against different text variations
+    const isLocked = gpsText.innerText.includes("LOCKED");
+    const gpsStatus = isLocked ? "GPS VERIFIED ✅" : "GPS MISSING ⚠️";
+    const time = new Date().toLocaleString();
+
+    // Line 1: Timestamp (Bright Green for visibility)
+    ctx.fillStyle = "#00e676"; 
+    ctx.font = "bold 24px monospace";
+    ctx.fillText(`PROOF OF LIFE: ${time}`, 30, canvas.height - 45);
+
+    // Line 2: Location Status (White)
+    ctx.fillStyle = "white";
+    ctx.font = "20px monospace";
+    ctx.fillText(`LOC: ${gpsStatus}`, 30, canvas.height - 20);
+
+    // --- 5. SAVE & DOWNLOAD ---
+    const link = document.createElement('a');
+    link.download = `SageWire_Proof_${Date.now()}.jpg`;
+    link.href = canvas.toDataURL('image/jpeg');
+    link.click();
+    
+    // --- 6. CLEANUP (Turn off Camera) ---
+    camUI.style.display = 'none';
+    if(currentStream) currentStream.getTracks().forEach(track => track.stop());
+}
+    
 
     // --- UTILS ---
     function updateUI() {
