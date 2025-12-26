@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SageWire Time v6.3</title>
+    <title>SageWire Time v7.0</title>
     <style>
         body { font-family: sans-serif; padding: 20px; background-color: #f5f7fa; color: #263238; display: flex; flex-direction: column; align-items: center; }
         .container { width: 100%; max-width: 600px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
@@ -12,10 +12,14 @@
         .header-brand h1 { color: #00897b; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
 
         /* Dashboard */
-        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
-        .dash-card { background: #e0f2f1; border-radius: 8px; padding: 15px; text-align: center; border-top: 4px solid #00897b; }
-        .dash-label { font-size: 0.7em; color: #00695c; text-transform: uppercase; font-weight: bold; }
-        .dash-value { font-size: 1.4em; font-weight: 900; color: #004d40; display: block; margin-top: 5px; }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 25px; }
+        .dash-card { background: #e0f2f1; border-radius: 8px; padding: 10px; text-align: center; border-top: 4px solid #00897b; }
+        .dash-label { font-size: 0.65em; color: #00695c; text-transform: uppercase; font-weight: bold; }
+        .dash-value { font-size: 1.1em; font-weight: 900; color: #004d40; display: block; margin-top: 5px; }
+        .dash-card.expense { background: #ffebee; border-top-color: #c62828; }
+        .dash-card.expense .dash-value { color: #c62828; }
+        .dash-card.profit { background: #e8f5e9; border-top-color: #2e7d32; }
+        .dash-card.profit .dash-value { color: #2e7d32; }
 
         /* Timer Box */
         .display-container { background: #263238; color: white; border-radius: 10px; padding: 25px; text-align: center; margin-bottom: 20px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); position: relative; }
@@ -32,29 +36,31 @@
         .camera-box { text-align: center; margin-bottom: 20px; background: #eee; padding: 10px; border-radius: 8px; display: none; position: relative; }
         video { width: 100%; border-radius: 8px; max-height: 400px; background: black; transform: scaleX(-1); }
         video.rear { transform: scaleX(1); }
-        
         .cam-controls { display: flex; gap: 10px; margin-top: 10px; }
         .snap-btn { background: #455a64; color: white; flex: 2; padding: 12px; font-weight:bold; border:none; border-radius:8px; cursor:pointer;}
         .flip-btn { background: #78909c; color: white; flex: 1; padding: 12px; font-weight:bold; border:none; border-radius:8px; cursor:pointer;}
         .close-cam { position: absolute; top: -10px; right: -10px; background: #c62828; color: white; border-radius: 50%; width: 30px; height: 30px; line-height: 30px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
 
-        /* ACTIVITY LOG */
+        /* TABS (New Layout) */
+        .tab-bar { display: flex; margin-bottom: 15px; border-bottom: 2px solid #eee; }
+        .tab-btn { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; color: #aaa; background: none; border: none; }
+        .tab-btn.active { color: #00897b; border-bottom: 3px solid #00897b; }
+
+        /* SECTIONS */
+        .section-view { display: none; }
+        .section-view.active { display: block; }
+
+        /* LOG BOX */
         .log-box { 
-            background: #f1f8e9; 
-            border: 1px solid #c5e1a5; 
-            border-radius: 8px; 
-            padding: 10px; 
-            margin-bottom: 20px; 
-            max-height: 200px; 
-            overflow-y: auto; 
-            font-size: 0.85rem;
-            display: none; 
+            background: #f1f8e9; border: 1px solid #c5e1a5; border-radius: 8px; padding: 10px; 
+            margin-bottom: 20px; max-height: 200px; overflow-y: auto; font-size: 0.85rem; display: none; 
         }
         .log-entry { border-bottom: 1px solid #dcedc8; padding: 8px 0; display: flex; justify-content: space-between; align-items: center; }
         .log-entry:last-child { border-bottom: none; }
         .log-time { font-weight: bold; color: #558b2f; font-size: 0.8rem; }
         .log-text { color: #33691e; flex:1; margin-left:10px; }
         .log-loc { font-size: 0.7rem; color: #555; background: #e8f5e9; padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+        .log-amt { font-weight:bold; color:#c62828; margin-left:10px;}
 
         /* Controls */
         .controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
@@ -68,6 +74,12 @@
         .waypoint-btn { width: 100%; background: #0277bd; padding: 15px; font-size: 1rem; box-shadow: 0 4px 0 #01579b; border-radius: 8px; color:white; font-weight:bold; border:none; cursor:pointer;}
         .waypoint-btn:active { transform: translateY(4px); box-shadow: none; }
         
+        /* EXPENSE STYLES */
+        .expense-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .expense-input { flex: 1; padding: 12px; border: 2px solid #c62828; border-radius: 8px; }
+        .expense-btn { background: #c62828; color: white; width: 100%; padding: 12px; font-weight: bold; border-radius: 8px; border:none; cursor: pointer; box-shadow: 0 4px 0 #8e0000; }
+        .expense-btn:active { transform: translateY(4px); box-shadow: none; }
+
         button:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; transform:none;}
 
         .input-row { display: flex; gap: 10px; margin-top: 15px; justify-content: center; }
@@ -82,17 +94,21 @@
 <div class="container">
     <div class="header-brand">
         <h1>SageWire TIME</h1>
-        <p>Route & Visit Logger</p>
+        <p>Travel & Expense Command</p>
     </div>
 
     <div class="dashboard-grid">
         <div class="dash-card">
-            <span class="dash-label">Weekly Hours</span>
-            <span class="dash-value" id="val-hours">0.0</span>
+            <span class="dash-label">Earned</span>
+            <span class="dash-value" id="val-hours">$0</span>
         </div>
-        <div class="dash-card">
-            <span class="dash-label">Est. Earnings</span>
-            <span class="dash-value" id="val-earn">$0</span>
+        <div class="dash-card expense">
+            <span class="dash-label">Spent</span>
+            <span class="dash-value" id="val-spent">$0</span>
+        </div>
+        <div class="dash-card profit">
+            <span class="dash-label">Net Profit</span>
+            <span class="dash-value" id="val-net">$0</span>
         </div>
     </div>
 
@@ -100,7 +116,6 @@
         <div class="gps-status"><span class="dot" id="gps-dot"></span> <span id="gps-text">NO GPS</span></div>
         <span class="status-badge" id="status-badge">OFF CLOCK</span>
         <div class="timer-display" id="main-timer">00:00:00</div>
-        <div class="money-display" id="money-display">$0.00</div>
         
         <div class="input-row">
             <div><label>Hourly</label><input type="number" id="hourly-rate" placeholder="$" onchange="saveSettings()"></div>
@@ -108,10 +123,45 @@
         </div>
     </div>
 
-    <button onclick="openCamera()" style="background:#37474f; width:100%; margin-bottom:15px; padding:12px;">📷 SNAP PROOF (PHOTO)</button>
-    
+    <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('time')">⏱️ TIME & ROUTE</button>
+        <button class="tab-btn" onclick="switchTab('money')">💸 EXPENSES</button>
+    </div>
+
+    <div id="tab-time" class="section-view active">
+        <button onclick="openCamera()" style="background:#37474f; width:100%; margin-bottom:15px; padding:12px; border-radius:8px; border:none; color:white; font-weight:bold; cursor:pointer;">📷 SNAP PROOF (SELFIE)</button>
+        
+        <div class="controls">
+            <button id="btn-in" onclick="markIn()">Start Day</button>
+            <button id="btn-pause" onclick="togglePause()" disabled>Pause</button>
+            <button id="btn-out" onclick="markOut()" disabled>End Day</button>
+        </div>
+
+        <div class="waypoint-box">
+            <input type="text" id="waypoint-note" class="note-input" placeholder="Visit Note (e.g. Pt Smith)...">
+            <button class="waypoint-btn" id="btn-waypoint" onclick="logWaypoint()" disabled>📍 LOG STOP / VISIT</button>
+        </div>
+        
+        <div style="background:#eceff1; padding:15px; border-radius:8px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;">
+            <span style="font-weight:bold; color:#455a64; font-size:0.9rem;">🚗 MILES DRIVEN:</span>
+            <input type="number" id="miles-driven" placeholder="0" style="width:80px; background:white;">
+        </div>
+    </div>
+
+    <div id="tab-money" class="section-view">
+        <div class="waypoint-box">
+            <div class="expense-row">
+                <input type="number" id="exp-amt" class="expense-input" placeholder="$ Amount">
+                <input type="text" id="exp-desc" class="expense-input" placeholder="Category (Gas/Food)">
+            </div>
+            <button class="expense-btn" onclick="logExpense()">💸 LOG EXPENSE</button>
+            <button onclick="openCamera(true)" style="background:#546e7a; width:100%; margin-top:10px; padding:12px; border-radius:8px; border:none; color:white; font-weight:bold; cursor:pointer;">🧾 SNAP RECEIPT PHOTO</button>
+        </div>
+    </div>
+
     <div class="camera-box" id="cam-ui">
         <div class="close-cam" onclick="closeCamera()">X</div>
+        <div id="cam-mode-label" style="position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.5); color:white; padding:4px 8px; border-radius:4px; font-size:0.7rem;">SELFIE MODE</div>
         <video id="video" autoplay playsinline></video>
         <div class="cam-controls">
             <button class="flip-btn" onclick="flipCamera()">🔄 FLIP</button>
@@ -120,46 +170,32 @@
         <canvas id="canvas" style="display:none;"></canvas>
     </div>
 
-    <div class="controls">
-        <button id="btn-in" onclick="markIn()">Start Day</button>
-        <button id="btn-pause" onclick="togglePause()" disabled>Pause</button>
-        <button id="btn-out" onclick="markOut()" disabled>End Day</button>
-    </div>
-
-    <div class="waypoint-box">
-        <input type="text" id="waypoint-note" class="note-input" placeholder="Type Visit Note... (e.g. Pt Smith)">
-        <button class="waypoint-btn" id="btn-waypoint" onclick="logWaypoint()" disabled>📍 CHECK IN / LOG STOP</button>
-    </div>
-
     <div class="log-box" id="activity-log">
-        <div style="text-align:center; color:#7cb342; font-weight:bold; margin-bottom:5px;">ROUTE LOG</div>
+        <div style="text-align:center; color:#7cb342; font-weight:bold; margin-bottom:5px;">DAILY LOG</div>
         <div id="log-entries"></div>
     </div>
 
-    <div style="background:#eceff1; padding:15px; border-radius:8px; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
-        <span style="font-weight:bold; color:#455a64; font-size:0.9rem;">🚗 MILES DRIVEN:</span>
-        <input type="number" id="miles-driven" placeholder="0" style="width:80px; background:white;">
-    </div>
-
     <div class="footer-btns">
-        <button onclick="exportCSV()" style="background:#546e7a;">💾 Export Log (CSV)</button>
+        <button onclick="exportCSV()" style="background:#546e7a;">💾 Export CSV (Sheets Ready)</button>
         <button onclick="clearHistory()" style="background:transparent; color:#e53935; border:1px solid #e53935;">Reset All Data</button>
     </div>
 </div>
 
 <script>
-    // State Variables
+    // State
     let startTime, accumulated = 0, timerInt, isRunning = false;
-    let startCoords = ""; 
-    let latestCoords = ""; 
-    let currentStream;
-    let facingMode = "user"; 
+    let startCoords = ""; let latestCoords = ""; 
+    let currentStream; let facingMode = "user"; 
+    let isReceiptMode = false; 
     let currentSessionLog = []; 
+    let sessionExpenses = 0;
     const history = JSON.parse(localStorage.getItem('sage_time_history')) || [];
     
-    // UI Elements
+    // UI Refs
     const elTimer = document.getElementById('main-timer');
-    const elMoney = document.getElementById('money-display');
+    const elMoney = document.getElementById('val-hours');
+    const elSpent = document.getElementById('val-spent');
+    const elNet = document.getElementById('val-net');
     const elStatus = document.getElementById('status-badge');
     const gpsDot = document.getElementById('gps-dot');
     const gpsText = document.getElementById('gps-text');
@@ -172,112 +208,122 @@
     const noteInput = document.getElementById('waypoint-note');
     const inHourly = document.getElementById('hourly-rate');
     const inMile = document.getElementById('mile-rate');
+    const expAmt = document.getElementById('exp-amt');
+    const expDesc = document.getElementById('exp-desc');
     
-    // --- INITIALIZATION ---
-    window.onload = function() {
-        loadSettings();
-        restoreSession(); // THE FIX: Restore state if page refreshed
-        updateDashboard();
-    };
+    // --- INIT ---
+    window.onload = function() { loadSettings(); restoreSession(); updateDashboard(); };
 
-    function saveSettings() {
-        localStorage.setItem('sage_settings', JSON.stringify({
-            hourly: inHourly.value,
-            mile: inMile.value
-        }));
+    // ✅ FIX #1: Corrected tab switching logic
+    function switchTab(tab) {
+        document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab-' + tab).classList.add('active');
+        
+        const buttons = document.querySelectorAll('.tab-btn');
+        if(tab === 'time') buttons[0].classList.add('active');
+        else if(tab === 'money') buttons[1].classList.add('active');
     }
 
+    function saveSettings() { localStorage.setItem('sage_settings', JSON.stringify({ h: inHourly.value, m: inMile.value })); }
     function loadSettings() {
-        const set = JSON.parse(localStorage.getItem('sage_settings'));
-        if(set) {
-            inHourly.value = set.hourly;
-            inMile.value = set.mile;
-        } else {
-            // Defaults
-            if(!inHourly.value) inHourly.value = "0";
-            if(!inMile.value) inMile.value = "0.67";
-        }
+        const s = JSON.parse(localStorage.getItem('sage_settings'));
+        if(s) { inHourly.value = s.h; inMile.value = s.m; } 
+        else { if(!inHourly.value) inHourly.value="0"; if(!inMile.value) inMile.value="0.67"; }
     }
 
-    // --- STATE PERSISTENCE (The Bulletproof Fix) ---
+    // --- PERSISTENCE ---
     function saveSessionState() {
-        const state = {
-            startTime, accumulated, isRunning, startCoords, currentSessionLog
-        };
+        const state = { startTime, accumulated, isRunning, startCoords, currentSessionLog, sessionExpenses };
         localStorage.setItem('sage_active_session', JSON.stringify(state));
     }
-
-    function clearSessionState() {
-        localStorage.removeItem('sage_active_session');
-    }
-
+    
+    // ✅ FIX #3: Session restore now updates dashboard immediately
     function restoreSession() {
-        const state = JSON.parse(localStorage.getItem('sage_active_session'));
-        if(state && state.isRunning) {
-            // Restore Variables
-            startTime = state.startTime;
-            accumulated = state.accumulated;
+        const s = JSON.parse(localStorage.getItem('sage_active_session'));
+        if(s && s.isRunning) {
+            startTime = s.startTime; 
+            accumulated = s.accumulated; 
             isRunning = true;
-            startCoords = state.startCoords;
-            currentSessionLog = state.currentSessionLog || [];
+            startCoords = s.startCoords; 
+            currentSessionLog = s.currentSessionLog || [];
+            sessionExpenses = s.sessionExpenses || 0;
             
-            // Restore UI Log
-            logBox.style.display = 'block';
+            logBox.style.display = 'block'; 
             logEntries.innerHTML = '';
-            // Re-render logs in reverse order (newest top)
-            // But log is stored chronological, so we loop normally and prepend
-            currentSessionLog.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'log-entry';
-                let locBadge = item.coords ? `<span class="log-loc">GPS ✓</span>` : '';
-                div.innerHTML = `<span class="log-time">${item.time}</span> <span class="log-text">${item.message}</span> ${locBadge}`;
-                logEntries.prepend(div);
-            });
-
-            // Resume Timer
-            updateUI();
-            timerInt = setInterval(tick, 1000);
-            tick(); // Update immediately
+            currentSessionLog.forEach(reRenderLog);
+            
+            updateUI(); 
+            timerInt = setInterval(tick, 1000); 
+            tick();
+            
+            // CRITICAL FIX: Update dashboard with restored expenses
+            updateDashboard(true);
         }
     }
 
     // --- LOGGING ---
-    function logEvent(message, coords = "") {
-        logBox.style.display = 'block';
-        const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        currentSessionLog.push({ time, message, coords });
-        saveSessionState(); // Save on every event
-
-        const div = document.createElement('div');
-        div.className = 'log-entry';
-        let locBadge = coords ? `<span class="log-loc">GPS ✓</span>` : '';
-        div.innerHTML = `<span class="log-time">${time}</span> <span class="log-text">${message}</span> ${locBadge}`;
+    function reRenderLog(item) {
+        const div = document.createElement('div'); div.className = 'log-entry';
+        let locBadge = item.coords ? `<span class="log-loc">GPS ✓</span>` : '';
+        let amtBadge = item.amount ? `<span class="log-amt">-$${item.amount}</span>` : '';
+        div.innerHTML = `<span class="log-time">${item.time}</span> <span class="log-text">${item.message}</span> ${amtBadge} ${locBadge}`;
         logEntries.prepend(div);
     }
 
-    // --- CORE TIMER ---
+    function logEvent(message, coords = "", amount = 0) {
+        logBox.style.display = 'block';
+        const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        const item = { time, message, coords, amount };
+        currentSessionLog.push(item);
+        if(amount > 0) sessionExpenses += parseFloat(amount);
+        
+        saveSessionState();
+        reRenderLog(item);
+        updateDashboard(true);
+    }
+
+    // --- CORE LOGIC ---
     function markIn() {
         getGPS((coords) => {
-            startCoords = coords;
-            startTime = Date.now();
-            accumulated = 0;
-            isRunning = true;
-            currentSessionLog = [];
-            logEntries.innerHTML = '';
+            startCoords = coords; startTime = Date.now(); accumulated = 0; isRunning = true;
+            currentSessionLog = []; sessionExpenses = 0; logEntries.innerHTML = '';
+            logEvent(gpsText.innerText.includes("LOCKED") ? "Start Shift (GPS Locked)" : "Start Shift (No GPS)", startCoords);
+            updateUI(); timerInt = setInterval(tick, 1000); saveSessionState();
+        });
+    }
+
+    function logWaypoint() {
+        if(!isRunning) return;
+        let note = noteInput.value.trim() || "Routine Check-In";
+        getGPS((coords) => {
+            logEvent(`📍 ${note}`, coords);
+            noteInput.value = ""; 
+            const t = btnWaypoint.innerText; btnWaypoint.innerText = "✅ SAVED!";
+            setTimeout(() => btnWaypoint.innerText = t, 1500);
+        });
+    }
+
+    // ✅ FIX #2: Expense logging now immediately updates dashboard
+    function logExpense() {
+        const amt = parseFloat(expAmt.value);
+        const desc = expDesc.value.trim() || "Expense";
+        if(!amt) return alert("Enter amount");
+        
+        getGPS((coords) => {
+            logEvent(`💸 ${desc}`, coords, amt);
+            expAmt.value = ""; expDesc.value = "";
             
-            const status = gpsText.innerText.includes("LOCKED") ? "Start Shift (GPS Locked)" : "Start Shift (No GPS)";
-            logEvent(status, startCoords);
+            // CRITICAL FIX: Force immediate dashboard update
+            updateDashboard(true);
             
-            updateUI();
-            timerInt = setInterval(tick, 1000);
-            saveSessionState();
+            alert("Expense Logged: -$" + amt.toFixed(2));
         });
     }
 
     function markOut() {
         clearInterval(timerInt);
         const endMs = accumulated + (isRunning ? (Date.now() - startTime) : 0);
-        
         getGPS((endCoords) => {
             logEvent("End Shift", endCoords);
             finalizeShift(endMs, endCoords);
@@ -288,58 +334,35 @@
         const rate = parseFloat(inHourly.value) || 0;
         const miles = parseFloat(document.getElementById('miles-driven').value) || 0;
         const mileRate = parseFloat(inMile.value) || 0;
-        const total = ((endMs / 3600000) * rate) + (miles * mileRate);
+        const earned = ((endMs / 3600000) * rate) + (miles * mileRate);
+        const net = earned - sessionExpenses;
 
-        const routeString = currentSessionLog.map(e => `[${e.time}] ${e.message}`).join(" | ");
+        const routeString = currentSessionLog.map(e => {
+            return e.amount ? `[EXPENSE: -$${e.amount} ${e.message}]` : `[${e.time}] ${e.message}`;
+        }).join(" | ");
 
         history.push({
             date: new Date().toLocaleString(),
             duration: (endMs / 3600000).toFixed(2),
             miles: miles,
-            totalPay: total.toFixed(2),
+            expenses: sessionExpenses.toFixed(2),
+            totalPay: earned.toFixed(2),
+            netProfit: net.toFixed(2),
             routeLog: routeString
         });
         localStorage.setItem('sage_time_history', JSON.stringify(history));
         
-        // Reset
-        isRunning = false; accumulated = 0; startCoords = "";
-        clearSessionState(); // Clear persistence
+        isRunning = false; accumulated = 0; localStorage.removeItem('sage_active_session');
         document.getElementById('miles-driven').value = '';
-        elTimer.innerText = "00:00:00"; elMoney.innerText = "$0.00";
         gpsDot.className = "dot"; gpsText.innerText = "NO GPS";
-        
         updateUI(); updateDashboard();
-        alert(`Shift Ended. Earned: $${total.toFixed(2)}`);
+        alert(`Shift Ended.\nEarned: $${earned.toFixed(2)}\nSpent: $${sessionExpenses.toFixed(2)}\nNet: $${net.toFixed(2)}`);
     }
 
     function togglePause() {
-        if(isRunning) {
-            clearInterval(timerInt);
-            accumulated += Date.now() - startTime;
-            isRunning = false; elStatus.innerText = "PAUSED";
-            logEvent("Paused Timer");
-        } else {
-            startTime = Date.now();
-            isRunning = true;
-            timerInt = setInterval(tick, 1000);
-            updateUI();
-            logEvent("Resumed Timer");
-        }
+        if(isRunning) { clearInterval(timerInt); accumulated += Date.now() - startTime; isRunning = false; elStatus.innerText = "PAUSED"; logEvent("Paused"); }
+        else { startTime = Date.now(); isRunning = true; timerInt = setInterval(tick, 1000); updateUI(); logEvent("Resumed"); }
         saveSessionState();
-    }
-
-    function logWaypoint() {
-        if(!isRunning) return;
-        let userNote = noteInput.value.trim();
-        if(!userNote) userNote = "Routine Check-In"; 
-
-        getGPS((coords) => {
-            logEvent(`📍 ${userNote}`, coords);
-            noteInput.value = ""; 
-            const origText = btnWaypoint.innerText;
-            btnWaypoint.innerText = "✅ SAVED!";
-            setTimeout(() => btnWaypoint.innerText = "📍 CHECK IN / LOG STOP", 1500);
-        });
     }
 
     function tick() {
@@ -347,9 +370,8 @@
         const sec = Math.floor((ms / 1000) % 60).toString().padStart(2,'0');
         const min = Math.floor((ms / 60000) % 60).toString().padStart(2,'0');
         const hr = Math.floor(ms / 3600000).toString().padStart(2,'0');
-        elTimer.innerText = `${hr}:${min}:${sec}`;
-        const rate = parseFloat(inHourly.value) || 0;
-        elMoney.innerText = "$" + ((ms/3600000)*rate).toFixed(2);
+        document.getElementById('main-timer').innerText = `${hr}:${min}:${sec}`;
+        updateDashboard(true);
     }
 
     // --- GPS ---
@@ -357,101 +379,93 @@
         if (!navigator.geolocation) { if(callback) callback("No Support"); return; }
         gpsText.innerText = "LOCATING...";
         navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                const c = `${pos.coords.latitude.toFixed(5)},${pos.coords.longitude.toFixed(5)}`;
-                latestCoords = c;
-                gpsDot.className = "dot active"; gpsText.innerText = "GPS LOCKED";
+            (p) => {
+                const c = `${p.coords.latitude.toFixed(5)},${p.coords.longitude.toFixed(5)}`;
+                latestCoords = c; gpsDot.className = "dot active"; gpsText.innerText = "GPS LOCKED";
                 if(callback) callback(c);
             },
-            (err) => {
-                latestCoords = "NO DATA";
-                gpsDot.className = "dot"; gpsText.innerText = "GPS ERROR";
-                if(callback) callback("Error"); 
-                // Fallback: Start even if GPS fails
-                if(!isRunning && !startCoords && callback && callback.name === "markIn") {
-                    startCoords = "No GPS"; startClockLogic();
-                }
-            },
-            { enableHighAccuracy: true, timeout: 10000 } // Increased to 10s
+            (e) => {
+                latestCoords = "NO DATA"; gpsDot.className = "dot"; gpsText.innerText = "GPS ERROR";
+                if(callback) callback("Error");
+            }, { enableHighAccuracy: true, timeout: 10000 }
         );
     }
 
     // --- CAMERA ---
-    function openCamera() {
-        getGPS(); camUI.style.display = 'block'; startCameraStream();
-    }
-    function closeCamera() {
-        camUI.style.display = 'none';
-        if(currentStream) currentStream.getTracks().forEach(track => track.stop());
-    }
-    function startCameraStream() {
-        if (currentStream) { currentStream.getTracks().forEach(track => track.stop()); }
-        const constraints = { video: { facingMode: facingMode } };
-        navigator.mediaDevices.getUserMedia(constraints)
-            .then(stream => { 
-                currentStream = stream;
-                video.srcObject = stream; 
-                if(facingMode === 'user') video.classList.remove('rear');
-                else video.classList.add('rear');
-            })
-            .catch(err => alert("Camera blocked."));
-    }
-    function flipCamera() {
-        facingMode = facingMode === "user" ? "environment" : "user";
+    function openCamera(receiptMode = false) {
+        getGPS(); camUI.style.display = 'block'; 
+        isReceiptMode = receiptMode;
+        facingMode = receiptMode ? "environment" : "user";
+        document.getElementById('cam-mode-label').innerText = receiptMode ? "RECEIPT MODE" : "SELFIE MODE";
         startCameraStream();
     }
+    function closeCamera() { camUI.style.display = 'none'; if(currentStream) currentStream.getTracks().forEach(t=>t.stop()); }
+    function startCameraStream() {
+        if (currentStream) { currentStream.getTracks().forEach(t => t.stop()); }
+        const c = { video: { facingMode: facingMode } };
+        navigator.mediaDevices.getUserMedia(c).then(s => { 
+            currentStream = s; video.srcObject = s; 
+            if(facingMode === 'user') video.classList.remove('rear'); else video.classList.add('rear');
+        }).catch(e => alert("Camera blocked."));
+    }
+    function flipCamera() { facingMode = facingMode === "user" ? "environment" : "user"; startCameraStream(); }
+    
     function takePhoto() {
         const ctx = canvas.getContext('2d');
         canvas.width = video.videoWidth; canvas.height = video.videoHeight;
         if (facingMode === 'user') { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
-        ctx.drawImage(video, 0, 0);
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.drawImage(video, 0, 0); ctx.setTransform(1, 0, 0, 1, 0, 0);
         
-        ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-        ctx.fillRect(0, canvas.height - 80, canvas.width, 80);
-        
+        ctx.fillStyle = "rgba(0, 0, 0, 0.6)"; ctx.fillRect(0, canvas.height - 80, canvas.width, 80);
         const time = new Date().toLocaleString();
-        const coordText = (latestCoords && latestCoords !== "NO DATA") ? latestCoords : "NO DATA";
-        const lockStatus = gpsText.innerText.includes("LOCKED") ? "(GPS LOCKED)" : "(NO GPS)";
+        const coord = (latestCoords && latestCoords !== "NO DATA") ? latestCoords : "NO DATA";
+        const lock = gpsText.innerText.includes("LOCKED") ? "(GPS LOCKED)" : "(NO GPS)";
 
         ctx.fillStyle = "#00e676"; ctx.font = "bold 24px monospace";
-        ctx.fillText(`PROOF OF LIFE: ${time}`, 30, canvas.height - 45);
+        ctx.fillText(isReceiptMode ? `RECEIPT LOG: ${time}` : `PROOF OF LIFE: ${time}`, 30, canvas.height - 45);
         ctx.fillStyle = "white"; ctx.font = "20px monospace";
-        ctx.fillText(`LOC: ${coordText} ${lockStatus}`, 30, canvas.height - 20);
+        ctx.fillText(`LOC: ${coord} ${lock}`, 30, canvas.height - 20);
 
         const link = document.createElement('a');
-        link.download = `SageWire_Proof_${Date.now()}.jpg`;
-        link.href = canvas.toDataURL('image/jpeg');
-        link.click();
-        logEvent("📸 Photo Proof Saved", latestCoords);
+        link.download = `SageWire_Proof_${Date.now()}.jpg`; link.href = canvas.toDataURL('image/jpeg'); link.click();
+        logEvent(isReceiptMode ? "📸 Receipt Captured" : "📸 Proof Captured", latestCoords);
         closeCamera();
     }
 
     // --- DASHBOARD ---
     function updateUI() {
-        document.getElementById('btn-in').disabled = isRunning;
-        document.getElementById('btn-pause').disabled = false;
-        document.getElementById('btn-out').disabled = false;
-        document.getElementById('btn-waypoint').disabled = !isRunning;
+        document.getElementById('btn-in').disabled = isRunning; document.getElementById('btn-pause').disabled = false;
+        document.getElementById('btn-out').disabled = false; document.getElementById('btn-waypoint').disabled = !isRunning;
         elStatus.innerText = isRunning ? "ON CLOCK" : "OFF CLOCK";
     }
-    function updateDashboard() {
-        let h = 0, m = 0;
-        history.forEach(r => { h += parseFloat(r.duration); m += parseFloat(r.totalPay); });
-        document.getElementById('val-hours').innerText = h.toFixed(1);
-        document.getElementById('val-earn').innerText = "$" + m.toFixed(0);
+    
+    function updateDashboard(live = false) {
+        let earned = 0;
+        
+        if(live && isRunning) {
+             const ms = accumulated + (Date.now() - startTime);
+             const rate = parseFloat(inHourly.value) || 0;
+             earned = (ms/3600000) * rate;
+             elMoney.innerText = "$" + earned.toFixed(2);
+             elSpent.innerText = "$" + sessionExpenses.toFixed(2);
+             elNet.innerText = "$" + (earned - sessionExpenses).toFixed(2);
+             return; 
+        }
+        
+        let hEarn = 0, hSpent = 0;
+        history.forEach(r => { hEarn += parseFloat(r.totalPay); hSpent += parseFloat(r.expenses || 0); });
+        elMoney.innerText = "$" + hEarn.toFixed(0);
+        elSpent.innerText = "$" + hSpent.toFixed(0);
+        elNet.innerText = "$" + (hEarn - hSpent).toFixed(0);
     }
+    
     function exportCSV() {
-        let csv = "Date,Hours,Miles,Total Earned,Route Log\n";
-        history.forEach(r => { csv += `"${r.date}",${r.duration},${r.miles},${r.totalPay},"${r.routeLog}"\n`; });
-        const link = document.createElement("a");
-        link.href = "data:text/csv;charset=utf-8," + encodeURI(csv);
-        link.download = "SageWire_Log.csv";
-        link.click();
+        let csv = "Date,Hours,Miles,Expenses,Gross Pay,Net Profit,Route Log\n";
+        history.forEach(r => { csv += `"${r.date}",${r.duration},${r.miles},${r.expenses},${r.totalPay},${r.netProfit},"${r.routeLog}"\n`; });
+        const link = document.createElement("a"); link.href = "data:text/csv;charset=utf-8," + encodeURI(csv);
+        link.download = "SageWire_Log.csv"; link.click();
     }
-    function clearHistory() {
-        if(confirm("Delete logs?")) { localStorage.removeItem('sage_time_history'); location.reload(); }
-    }
+    function clearHistory() { if(confirm("Delete logs?")) { localStorage.removeItem('sage_time_history'); location.reload(); } }
 </script>
 </body>
 </html>
