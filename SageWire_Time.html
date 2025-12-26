@@ -268,15 +268,15 @@
         // Reset Transform for Text
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         
-            // --- 4. ADD WATERMARK OVERLAY ---
-    // This draws the semi-transparent black bar at the bottom
-    ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-    ctx.fillRect(0, canvas.height - 80, canvas.width, 80);
+        // ADD WATERMARK OVERLAY ---
+        // This draws the semi-transparent black bar at the bottom
+        ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+        ctx.fillRect(0, canvas.height - 80, canvas.width, 80);
     
-    // This adds the "PROOF OF LIFE" text in Neon Green
-    ctx.fillStyle = "#00e676"; 
-    ctx.font = "bold 24px monospace";
-    ctx.fillText(`PROOF OF LIFE: ${time}`, 30, canvas.height - 45);
+        // This adds the "PROOF OF LIFE" text in Neon Green
+        ctx.fillStyle = "#00e676"; 
+        ctx.font = "bold 24px monospace";
+        ctx.fillText(`PROOF OF LIFE: ${time}`, 30, canvas.height - 45);
 
         
         // Only verify GPS if green
